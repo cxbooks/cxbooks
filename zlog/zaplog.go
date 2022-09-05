@@ -1,6 +1,7 @@
 package zlog
 
 import (
+	"os"
 	"path/filepath"
 
 	"github.com/natefinch/lumberjack"
@@ -68,6 +69,10 @@ func getEncoder(json bool) zapcore.Encoder {
 }
 
 func getWriter(logDir string, lv Level) zapcore.WriteSyncer {
+
+	if logDir == `stdout` {
+		return zapcore.Lock(os.Stdout)
+	}
 
 	fileName := filepath.Join(logDir, "cxbooks."+lv.CapitalString()+".log")
 

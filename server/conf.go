@@ -48,7 +48,7 @@ func InitConfig() *Config {
 	flag.StringVar(&ConfFile, "conf", "conf/conf.yml", "The configure file")
 	flag.StringVar(&config.PPROF, "pprof", "", "[localhost:6060]start debug page.")
 	flag.StringVar(&config.APIAddr, "addr", "", "The api listen addr[192.168.1.201:8000] if not set this config read from conf.yml .")
-	flag.StringVar(&config.LogDir, "log", "logs", "The log file")
+	flag.StringVar(&config.LogDir, "log", "stdout", "The log file")
 	flag.Var(&config.LogLevel, "verbose", "The log level [debug,info,error]")
 	flag.BoolVar(&config.InitFlag, "init", false, "init db.")
 	flag.Parse()

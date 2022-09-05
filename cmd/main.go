@@ -15,7 +15,7 @@ func main() {
 
 	api := server.NewService()
 
-	ch := make(chan os.Signal, 2)
+	ch := make(chan os.Signal)
 	signal.Notify(ch, os.Interrupt, syscall.SIGTERM)
 
 	ctx, cancel := context.WithCancel(context.Background())

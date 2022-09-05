@@ -62,34 +62,38 @@ func NewServiceWithConfig(cf *Config) *Service {
 // StartContext 启动
 func (m *Service) StartContext(ctx context.Context) (err error) {
 	m.ctx = ctx
-	//连接数据库
-	m.orm, err = model.WaitDB(ctx, m.cfg.DBOpt)
-	if err != nil {
-		return err
-	}
 
-	//初始化数据库
-	if m.cfg.InitFlag {
-		if err := model.AutoMigrate(m.orm); err != nil {
+	go func() {
+		//连接数据库
+		m.orm, err = model.WaitDB(ctx, m.cfg.DBOpt)
+		if err != nil {
 			zlog.E(`初始化数据库异常，退出`)
 			os.Exit(1)
 		}
-		os.Exit(0)
-	}
 
-	//开启golang 调试
-	if m.cfg.PPROF != "" {
-		zlog.I(`开启PPROF：`, m.cfg.PPROF)
-		go func() {
-			zlog.I(http.ListenAndServe(m.cfg.PPROF, nil))
-		}()
-	}
+		//初始化数据库
+		if m.cfg.InitFlag {
+			if err := model.AutoMigrate(m.orm); err != nil {
+				zlog.E(`初始化数据库异常，退出`)
+				os.Exit(1)
+			}
+			os.Exit(0)
+		}
 
-	//开启http/https服务
-	//TODO
-	m.router = initGinRoute(m.cfg.LogLevel)
+		//开启golang 调试
+		if m.cfg.PPROF != "" {
+			zlog.I(`开启PPROF：`, m.cfg.PPROF)
+			go func() {
+				zlog.I(http.ListenAndServe(m.cfg.PPROF, nil))
+			}()
+		}
 
-	m.listen()
+		//开启http/https服务
+		//TODO
+		m.router = initGinRoute(m.cfg.LogLevel)
+
+		m.listen()
+	}()
 
 	return nil
 

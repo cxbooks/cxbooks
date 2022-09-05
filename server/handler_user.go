@@ -11,9 +11,10 @@ func UserMessages(c *gin.Context) {
 func SignIn(c *gin.Context) {
 
 }
-func SignUp(c *gin.Context) {
 
-}
+// func SignUp(c *gin.Context) {
+
+// }
 func SignOut(c *gin.Context) {
 
 }
