@@ -1,0 +1,38 @@
+#
+# Created by tjuliuyou on 2022/08/29.
+#
+#
+# 基本配置
+
+api_addr: '0.0.0.0:8000'
+
+# tls_addr: '0.0.0.0:443' #tls_addr 不为空即开启
+# The TLS cert file.
+cert_file: '/ssl/tls.crt'
+
+#The TLS key file.
+key_file: '/ssl/tls.key'
+
+cert_file: '/ssl/tls.crt'
+
+db_opt:
+  driver: 'sqlite'
+  host: '/data/cxbooks.db'
+  user: 'postgres'
+  passwd: ''
+  port: 0
+  dbname: ''
+  sslmode: ''
+
+# postgres 配置
+# db_opt:
+#   driver: 'postgres'
+#   user: 'postgres'
+#   passwd: '123456'
+#   host: '127.0.0.1'
+#   port: 5432
+#   dbname: 'cxbooks_db'
+#   sslmode: 'disable'
+
+
+
