@@ -1,24 +1,41 @@
+
 import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
-import i18n from './i18n'
+import vuetify from './plugins/vuetify'
+import { loadFonts } from './plugins/webfontloader'
+
 import { createStore } from 'vuex'
 
 // Create a new store instance.
 const store = createStore({
     state() {
         return {
-            count: 0
+            count: 0,
+            loading: true,
+            nav: true,
+            role: 1000,
+            nickname: "",
+            is_login: false,
+            sys: {
+                socials: [], allow: {},
+            }
         }
     },
     mutations: {
         increment(state) {
             state.count++
-        }
+        },
+        loaded(state) {
+            state.loading = false;
+        },
     }
 })
-// Vue.config.productionTip = false
 
-// new Vue()
+loadFonts()
 
-createApp(App).use(i18n).use(router).use(store).mount('#app')
+createApp(App)
+    .use(router)
+    .use(vuetify)
+    .use(store)
+    .mount('#app')
