@@ -10,7 +10,7 @@ import (
 
 func RegRoute(router *gin.Engine) {
 
-	admin := router.Group("/api/admin")
+	admin := router.Group("/api/admin", OauthMiddleware)
 
 	admin.POST("/ssl", AdminSSL)
 	admin.POST("/users", AdminUsers)
@@ -29,14 +29,14 @@ func RegRoute(router *gin.Engine) {
 
 	// (r"/api/welcome", Welcome),
 
-	user := router.Group("/api/user")
+	router.POST("api/user/sign_in", SignIn)
+
+	user := router.Group("/api/user", OauthMiddleware)
 
 	user.GET("/info", UserInfo)
 	user.GET("/messages", UserMessages)
-	user.POST("/sign_in", SignIn)
 	user.POST("/sign_out", SignOut)
 	// user.POST("/sign_up", SignUp)
-
 	user.POST("/update", UserUpdate)
 	user.POST("/reset", UserReset)
 	user.POST("/active/send", UserSendActive)
@@ -57,19 +57,19 @@ func RegRoute(router *gin.Engine) {
 	// router.GET("/api/author/(.*)/update", AuthorBooksUpdate)
 	// router.GET("/api/publisher/(.*)/update", PubBooksUpdate)
 
-	router.GET("/api/book/index", Index)
-	router.GET("/api/book/search", SearchBook)
-	router.GET("/api/book/recent", RecentBook)
-	router.GET("/api/book/hot", HotBook)
-	router.GET("/api/book/nav", BookNav)
-	router.GET("/api/book/upload", BookUpload)
-	router.GET("/api/books/:book_id", BookDetail)
-	router.GET("/api/books/:book_id/delete", BookDelete)
-	router.GET("/api/books/:book_id/edit", BookEdit)
-	router.GET(`/api/books/:book_id/download`, BookDownload)
-	router.GET("/api/books/:book_id/push", BookPush)
-	router.GET("/api/books/:book_id/refer", BookRefer)
-	router.GET("/read/:book_id", BookRead)
+	router.GET("/api/book/index", OauthMiddleware, Index)
+	router.GET("/api/book/search", OauthMiddleware, SearchBook)
+	router.GET("/api/book/recent", OauthMiddleware, RecentBook)
+	router.GET("/api/book/hot", OauthMiddleware, HotBook)
+	router.GET("/api/book/nav", OauthMiddleware, BookNav)
+	router.GET("/api/book/upload", OauthMiddleware, BookUpload)
+	router.GET("/api/books/:book_id", OauthMiddleware, BookDetail)
+	router.GET("/api/books/:book_id/delete", OauthMiddleware, BookDelete)
+	router.GET("/api/books/:book_id/edit", OauthMiddleware, BookEdit)
+	router.GET(`/api/books/:book_id/download`, OauthMiddleware, BookDownload)
+	router.GET("/api/books/:book_id/push", OauthMiddleware, BookPush)
+	router.GET("/api/books/:book_id/refer", OauthMiddleware, BookRefer)
+	router.GET("/read/:book_id", OauthMiddleware, BookRead)
 
 	//  (r"/get/pcover", ProxyImageHandler),
 	//     (r"/get/progress/([0-9]+)", ProgressHandler),

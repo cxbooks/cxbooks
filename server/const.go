@@ -1,10 +1,23 @@
-package cxbooks
+package server
+
+import "strconv"
+
+type LANG string
+
+const (
+	ZH LANG = `zh-CN`
+	EN LANG = `en-US`
+)
 
 // Code 状态码别名, 减少本地
+//
+//go:generate stringer -type=Code
 type Code int32
 
 // 状态码
 const (
+	SUCCESS                        Code = 0    //0: 成功
+	ErrUserPassword                Code = 1109 //@field 1109: 账号或密码有误,请重试
 	ErrSession                     Code = 8001 //8001: 无效会话或会话已过期
 	ErrDefListSearchNotSupport     Code = 8101 //8101: 该资源不支持通用查找
 	ErrDefListSearchAbnormalField  Code = 8102 //8102: 资源过滤字段异常
@@ -35,7 +48,7 @@ const (
 	ErrDuplicateKey                Code = 8127 //8127: 记录值重复
 	ErrSessionTimeout              Code = 8128 //8128: 会话过期
 
-	CacheKeySession = `user:sessions:`
+
 
 	CacheKeyUserID = `/user/users/user_id/`
 
@@ -45,3 +58,26 @@ const (
 
 	CommonUA = `Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.139 Safari/537.36`
 )
+
+// Resp 标准化返回
+type Resp struct {
+	Code    Code        `json:"code"`
+	Message string      `json:"message"`
+	Data    interface{} `json:"data,omitempty"`
+}
+
+func (r Code) String() string {
+	return strconv.Itoa(int(r))
+}
+
+// Locale 多语言化返回
+func (r Code) Tr(lang LANG) *Resp {
+	//TODO
+	return &Resp{Code: r, Message: `format`}
+}
+
+// With 设置Resp data
+func (r *Resp) With(data interface{}) *Resp {
+	r.Data = data
+	return r
+}

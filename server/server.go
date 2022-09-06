@@ -11,13 +11,14 @@ import (
 	"github.com/cxbooks/cxbooks/server/model"
 	"github.com/cxbooks/cxbooks/zlog"
 	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
 )
 
 var (
-	service  *Service  //全局单例
+	srv      *Service  //全局单例
 	initOnce sync.Once //
 )
+
+type Store = model.Store
 
 type Service struct {
 	srv  *http.Server //http server
@@ -26,7 +27,7 @@ type Service struct {
 
 	router *gin.Engine //http 路由表
 
-	orm *gorm.DB
+	orm *Store
 
 	ctx context.Context
 }
@@ -35,10 +36,10 @@ func NewService() *Service {
 
 	initOnce.Do(func() {
 		config := InitConfig()
-		service = NewServiceWithConfig(config)
+		srv = NewServiceWithConfig(config)
 	})
 	//返回全局的service，主程序启动应该只一定一个service
-	return service
+	return srv
 
 }
 
@@ -113,9 +114,12 @@ func (m *Service) GracefulStop() {
 
 	if m.orm != nil {
 		zlog.I(`关闭数据库连接...`)
-		sqlDB, _ := m.orm.DB()
-		sqlDB.Close()
+		m.orm.Close()
 	}
+}
+
+func (m *Service) Store() *Store {
+	return m.orm
 }
 
 func (m *Service) listen() {

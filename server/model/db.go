@@ -3,7 +3,9 @@ package model
 import (
 	"context"
 	"strconv"
+	"time"
 
+	"github.com/bluele/gcache"
 	"github.com/cxbooks/cxbooks/server/tools"
 	"github.com/cxbooks/cxbooks/zlog"
 	"go.uber.org/zap/zapcore"
@@ -25,6 +27,11 @@ const (
 	DRSqlite Driver = "sqlite"
 )
 
+type Store struct {
+	*gorm.DB
+	LRU gcache.Cache
+}
+
 // Opt PG 数据库配置
 type Opt struct {
 	Driver   Driver        `yaml:"driver" json:"driver"`       //数据库类型
@@ -38,8 +45,13 @@ type Opt struct {
 	Args     string        `yaml:"args" json:"args"`           // charset=utf8 //额外选项
 }
 
+func (s *Store) Close() {
+	sqlDB, _ := s.DB.DB()
+	sqlDB.Close()
+}
+
 // OpenDB 直接打开数据库连接 如果失败立即返回错误
-func OpenDB(opt *Opt) (*gorm.DB, error) {
+func OpenDB(opt *Opt) (*Store, error) {
 
 	db, err := gorm.Open(opt.DSN(), &gorm.Config{})
 	if err != nil {
@@ -47,27 +59,36 @@ func OpenDB(opt *Opt) (*gorm.DB, error) {
 		zlog.I(`链接数据库异常:`, opt.String())
 	}
 
-	return db, err
+	return &Store{
+		db,
+		gcache.New(512).LRU().Expiration(time.Second * 180).Build(),
+	}, nil
 
 }
 
 // WaitDB 打开数据库连接，如果失败则一直尝试重连直到成功为止
-func WaitDB(ctx context.Context, opt *Opt) (*gorm.DB, error) {
+func WaitDB(ctx context.Context, opt *Opt) (*Store, error) {
 
-	var db *gorm.DB
+	var store *Store
 	var err error
 
 	f := func() error {
-		db, err = gorm.Open(opt.DSN(), &gorm.Config{})
+		db, err := gorm.Open(opt.DSN(), &gorm.Config{})
 		if err != nil {
 			zlog.I(`链接数据库异常:`, opt.String())
+			return err
 		}
-		return err
+
+		store = &Store{
+			db,
+			gcache.New(512).LRU().Expiration(time.Second * 180).Build(),
+		}
+		return nil
 	}
 
 	err = tools.Wait(ctx, 30, f)
 
-	return db, err
+	return store, err
 }
 
 // DSN return gorm v2 Dialector
