@@ -35,11 +35,11 @@ cxbooks:
 	@cd ${DESTDIR}; tar -czf cxbooks-${VERSION}.tar.gz cxbooks-${VERSION}
 
 docker: cxbooks
-	@cp -f ${PROJECT_PATH}/cmd/cxbooks/.dockerignore ${DESTDIR}/cxbooks-${VERSION}/
-	@cp -f ${PROJECT_PATH}/cmd/cxbooks/docker-entrypoint.sh ${DESTDIR}/cxbooks-${VERSION}/
-	@cp -f ${PROJECT_PATH}/cmd/cxbooks/Dockerfile ${DESTDIR}/cxbooks-${VERSION}/
+	@cp -f ${PROJECT_PATH}/.dockerignore ${DESTDIR}/cxbooks-${VERSION}/
+	@cp -f ${PROJECT_PATH}/docker-entrypoint.sh ${DESTDIR}/cxbooks-${VERSION}/
+	@cp -f ${PROJECT_PATH}/Dockerfile ${DESTDIR}/cxbooks-${VERSION}/
 	@chmod +x ${DESTDIR}/cxbooks-${VERSION}/docker-entrypoint.sh
-	@cd ${DESTDIR}/cxbooks-${VERSION}/;docker build -t cxbooks:${VERSION} ./
+	@cd ${DESTDIR}/cxbooks-${VERSION}/;docker build -t cxbooks:v0.0.1 ./
 
 
 clean:

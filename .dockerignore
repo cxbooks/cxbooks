@@ -1,0 +1,6 @@
+Dockerfile
+.dockerignore
+cmd
+docs
+server
+web
