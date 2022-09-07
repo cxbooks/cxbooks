@@ -245,7 +245,8 @@ export default {
             ];
             var nav_links = [
                 { heading: "分类浏览" },
-                { icon: "widgets", href: "/nav", text: "分类导览", count: this.sys.books },
+                // this.sys.books 
+                { icon: "widgets", href: "/nav", text: "分类导览", count: 0},
                 { icon: "mdi-home-group", href: "/publisher", text: "出版社", count: this.sys.publishers },
                 { icon: "mdi-human-greeting", href: "/author", text: "作者", count: this.sys.authors },
                 { icon: "mdi-tag-heart", href: "/tag", text: "标签", count: this.sys.tags },
@@ -283,9 +284,34 @@ export default {
         // this.sidebar = this.$vuetify.breakpoint.lgAndUp;
         fetch("/api/user/info").then((rsp) => {
             this.err = rsp.err;
-            this.sys = rsp.sys;
+            // this.sys = rsp.sys;
+
+            this.sys = {
+                books: 0,
+                tags: 0,
+                authors: 0,
+                publishers: 0,
+                series: 0,
+                users: 0,
+                active: 0,
+                version: "",
+                mtime: "",
+                title: "",
+                footer: "",
+                socials: [],
+                friends: [],
+                allow: {
+                    register: true,
+                    download: true,
+                    push: true,
+                    read: true,
+                },
+            }
+
             this.user = rsp.user;
-            this.$store.commit("login", rsp);
+            this.user = {};
+
+            // this.$store.commit("login", rsp);
         });
         fetch("/api/user/messages").then((rsp) => {
             if (rsp.err == "ok") {

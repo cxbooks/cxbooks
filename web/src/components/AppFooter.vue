@@ -18,9 +18,9 @@ export default {
     name: 'AppFooter',
     computed: {
         footer_text: function() {
-            if ( this.$store.state.sys.footer != undefined ) {
-                return this.$store.state.sys.footer;
-            }
+            // if ( this.$store.state.sys.footer != undefined ) {
+            //     return this.$store.state.sys.footer;
+            // }
             return this.footer;
         },
     },

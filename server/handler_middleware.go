@@ -11,7 +11,8 @@ import (
 const (
 	XUserOauthListTag = `X-User-Oauth-list`
 	XUserOauthTag     = `X-User-List-Tag`
-	XUserInfoTag      = `X-User-Key`
+	XUserInfoTag      = `X-User-Info-Key`
+	XUserIDTag        = `X-User-ID-Key`
 	XLangTag          = `x-Lang-Tag`
 
 	UserSessionTag = `session-id`
@@ -55,6 +56,7 @@ func OauthMiddleware(c *gin.Context) {
 	}
 
 	c.Set(XUserInfoTag, session.UserInfo)
+	c.Set(XUserIDTag, session.UserInfo.UserID)
 
 	c.Next()
 }

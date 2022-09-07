@@ -69,7 +69,7 @@ export default {
         },
     },
     created() {
-        this.$store.commit('navbar', true);
+        // this.$store.commit('navbar', true);
         this.navs = [
             { icon: 'widgets',            href:'/nav',       text: '分类导览',  count: this.$store.state.sys.books      },
             { icon: 'mdi-human-greeting', href:'/author',    text: '作者',     count: this.$store.state.sys.authors    },

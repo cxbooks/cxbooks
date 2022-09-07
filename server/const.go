@@ -17,7 +17,10 @@ type Code int32
 // 状态码
 const (
 	SUCCESS                        Code = 0    //0: 成功
+	ErrNoFound                     Code = 404  //404: 记录未找到
 	ErrUserPassword                Code = 1109 //@field 1109: 账号或密码有误,请重试
+	ErrCreateSession               Code = 1111 //@field 1111: 账号或密码有误,请重试
+	ErrUserLocked                  Code = 1110 //@field 1110: 账号已经被锁定，请联系管理员
 	ErrSession                     Code = 8001 //8001: 无效会话或会话已过期
 	ErrDefListSearchNotSupport     Code = 8101 //8101: 该资源不支持通用查找
 	ErrDefListSearchAbnormalField  Code = 8102 //8102: 资源过滤字段异常
@@ -47,8 +50,6 @@ const (
 	ErrNoEtcdConfig                Code = 8126 //8126: ETCD配置为空
 	ErrDuplicateKey                Code = 8127 //8127: 记录值重复
 	ErrSessionTimeout              Code = 8128 //8128: 会话过期
-
-
 
 	CacheKeyUserID = `/user/users/user_id/`
 

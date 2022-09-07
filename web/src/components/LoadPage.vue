@@ -1,5 +1,5 @@
 <template>
-    <div v-show="$store.state.loading" class="loading-page">
+    <div v-show="" class="loading-page">
         <v-progress-circular indeterminate size=128 color="deep-orange lighten-2"></v-progress-circular>
     </div>
 </template>

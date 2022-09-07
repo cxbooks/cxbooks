@@ -7,7 +7,7 @@
                     <v-toolbar dark color="primary">
                         <v-toolbar-title>欢迎访问</v-toolbar-title>
                         <v-spacer></v-spacer>
-                        <v-btn v-if="$store.state.sys.allow.register" rounded color="green" to="/signup">注册</v-btn>
+                        <v-btn v-if="true" rounded color="green" to="/signup">注册</v-btn>
                     </v-toolbar>
                     <v-card-text>
                         <v-form @submit.prevent="do_login">
@@ -25,7 +25,7 @@
                         </v-form>
                     </v-card-text>
 
-                    <v-card-text v-if="socials.length > 0">
+                    <v-card-text v-if="0 > 0">
                         <v-divider></v-divider>
                         <div align="center">
                             <br />
@@ -64,17 +64,19 @@
 </template>
 
 <script>
+
+import { useAuthStore } from '@/stores';
+
 export default {
     name: 'LoginView',
     data: () => ({
         username: "",
         password: "",
-        email: "",
-        show_login: true,
         alert: {
             type: "error",
             msg: "",
         },
+        show_login:true,
     }),
 
     asyncData({ store }) {
@@ -86,52 +88,44 @@ export default {
     }),
     
     created() {
-        this.$store.commit("navbar", false);
-        this.$backend("/user/info").then((rsp) => {
-            this.$store.commit("login", rsp);
-        });
+        // this.$store.commit("navbar", false);
+        // this.$backend("/user/info").then((rsp) => {
+        //     this.$store.commit("login", rsp);
+        // });
     },
     computed: {
-        socials: function () {
-            return this.$store.state.sys.socials;
-        },
+        // socials: function () {
+        //     return this.$store.state.sys.socials;
+        // },
     },
     methods: {
-        do_login: function () {
-            var data = new URLSearchParams();
-            data.append("username", this.username);
-            data.append("password", this.password);
-            this.$backend("/user/sign_in", {
-                method: "POST",
-                body: data,
-            }).then((rsp) => {
-                if (rsp.err != "ok") {
-                    this.alert.type = "error";
-                    this.alert.msg = rsp.msg;
-                } else {
-                    this.$store.commit("navbar", true);
-                    this.$router.push("/");
-                }
-            });
+        do_login: function() {
+            const authStore = useAuthStore();
+            
+            return authStore.login(this.username, this.password)
+                .catch(error => { 
+                    // this.alert.type = error;
+                    console.log(error);
+                 });
         },
         do_reset: function () {
             var data = new URLSearchParams();
             data.append("username", this.username);
             data.append("email", this.email);
-            this.$backend("/user/reset", {
-                method: "POST",
-                body: data,
-                }).then((rsp) => {
-                    if (rsp.err == "ok") {
-                    this.alert.type = "success";
-                    this.alert.msg = "重置成功！请查阅密码通知邮件。";
-                } else {
-                    this.alert.type = "error";
-                    this.alert.msg = rsp.msg;
-                }
-            });
+            // this.$backend("/user/reset", {
+            //     method: "POST",
+            //     body: data,
+            //     }).then((rsp) => {
+            //         if (rsp.err == "ok") {
+            //         this.alert.type = "success";
+            //         this.alert.msg = "重置成功！请查阅密码通知邮件。";
+            //     } else {
+            //         this.alert.type = "error";
+            //         this.alert.msg = rsp.msg;
+            //     }
+            // });
         },
-    },
+ },
 };
 </script>
 

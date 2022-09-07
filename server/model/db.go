@@ -79,6 +79,10 @@ func WaitDB(ctx context.Context, opt *Opt) (*Store, error) {
 			return err
 		}
 
+		if opt.LogLevel == zapcore.DebugLevel {
+			db = db.Debug()
+		}
+
 		store = &Store{
 			db,
 			gcache.New(512).LRU().Expiration(time.Second * 180).Build(),
