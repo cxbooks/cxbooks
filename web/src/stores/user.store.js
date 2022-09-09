@@ -24,10 +24,10 @@ export const useAuthStore = defineStore({
         }
     }),
     actions: {
-        async login(username, password) {
+        async login(account, password) {
 
             console.log(process.env.VUE_APP_SECRET)
-            const user = await fetchWrapper.post(`${baseUrl}/user/login`, { username, password });
+            const user = await fetchWrapper.post(`${baseUrl}/user/login`, { account, password });
 
             // update pinia state
             this.user = user;

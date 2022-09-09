@@ -8,7 +8,7 @@ import (
 
 // UserInfo GET /api/user/info
 // 获取用户信息
-func UserInfo(c *gin.Context) {
+func UserInfoHandler(c *gin.Context) {
 	zlog.D(`获取用户信息`)
 	if info, ok := c.Get(XUserInfoTag); ok {
 
@@ -20,7 +20,7 @@ func UserInfo(c *gin.Context) {
 
 }
 
-func UserMessages(c *gin.Context) {
+func UserMessagesHandler(c *gin.Context) {
 	zlog.D(`获取用户信息`)
 	id := c.GetInt64(XUserIDTag)
 
@@ -38,23 +38,24 @@ func UserMessages(c *gin.Context) {
 
 // LoginReq  登陆
 type LoginReq struct {
-	Account        string `form:"account" json:"account" binding:"required"`
-	Password       string `form:"password" json:"password" binding:"required"`
-	RecaptchaToken string `form:"recaptcha_token" json:"recaptcha_token"`
+	Account  string `form:"account" json:"account" binding:"required"`
+	Password string `form:"password" json:"password" binding:"required"`
+	// RecaptchaToken string `form:"recaptcha_token" json:"recaptcha_token"`
 }
 
-func SignIn(c *gin.Context) {
+func SignInHandler(c *gin.Context) {
 
 	// ip := c.ClientIP()
 
-	req := struct {
-		Account        string `form:"account" json:"account" binding:"required"`
-		Password       string `form:"password" json:"password" binding:"required"`
-		RecaptchaToken string `form:"recaptcha_token" json:"recaptcha_token"`
+	req := &struct {
+		Account  string `form:"account" json:"account" binding:"required"`
+		Password string `form:"password" json:"password" binding:"required"`
+		// RecaptchaToken string `form:"recaptcha_token" json:"recaptcha_token"`
 	}{}
 
 	if err := c.ShouldBind(req); err != nil {
-		c.JSON(400, ErrUserPassword.Tr(ZH))
+		zlog.I(`用户登录参数异常`, err)
+		c.JSON(200, ErrUserPassword.Tr(ZH))
 		return
 	}
 
@@ -78,7 +79,7 @@ func SignIn(c *gin.Context) {
 		c.JSON(200, ErrInnerServer.Tr(ZH))
 		return
 	}
-
+	zlog.I(`用户登录成功设置，浏览器cookies`)
 	c.SetCookie(UserSessionTag, sess.Session, 0, "/", c.Request.Host, true, true)
 	//TODO recording login log to DB
 
@@ -89,15 +90,15 @@ func SignIn(c *gin.Context) {
 
 // }
 
-func SignOut(c *gin.Context) {
+func SignOutHandler(c *gin.Context) {
 
 }
-func UserUpdate(c *gin.Context) {
+func UserUpdateHandler(c *gin.Context) {
 
 }
-func UserReset(c *gin.Context) {
+func UserResetHandler(c *gin.Context) {
 
 }
-func UserSendActive(c *gin.Context) {
+func UserSendActiveHandler(c *gin.Context) {
 
 }

@@ -1,13 +1,13 @@
 package server
 
-import "strconv"
-
 type LANG string
 
 const (
 	ZH LANG = `zh-CN`
 	EN LANG = `en-US`
 )
+
+var zhLang map[string]string
 
 // Code 状态码别名, 减少本地
 //
@@ -18,9 +18,9 @@ type Code int32
 const (
 	SUCCESS                        Code = 0    //0: 成功
 	ErrNoFound                     Code = 404  //404: 记录未找到
-	ErrUserPassword                Code = 1109 //@field 1109: 账号或密码有误,请重试
-	ErrCreateSession               Code = 1111 //@field 1111: 账号或密码有误,请重试
-	ErrUserLocked                  Code = 1110 //@field 1110: 账号已经被锁定，请联系管理员
+	ErrUserPassword                Code = 1109 //1109: 账号或密码有误,请重试
+	ErrCreateSession               Code = 1111 //1111: 账号或密码有误,请重试
+	ErrUserLocked                  Code = 1110 //1110: 账号已经被锁定，请联系管理员
 	ErrSession                     Code = 8001 //8001: 无效会话或会话已过期
 	ErrDefListSearchNotSupport     Code = 8101 //8101: 该资源不支持通用查找
 	ErrDefListSearchAbnormalField  Code = 8102 //8102: 资源过滤字段异常
@@ -67,18 +67,60 @@ type Resp struct {
 	Data    interface{} `json:"data,omitempty"`
 }
 
-func (r Code) String() string {
-	return strconv.Itoa(int(r))
-}
-
 // Locale 多语言化返回
 func (r Code) Tr(lang LANG) *Resp {
 	//TODO
-	return &Resp{Code: r, Message: `format`}
+	msg, ok := zhLang[r.String()]
+	if !ok {
+		msg = r.String()
+	}
+
+	return &Resp{Code: r, Message: msg}
 }
 
 // With 设置Resp data
 func (r *Resp) With(data interface{}) *Resp {
 	r.Data = data
 	return r
+}
+
+//TODO
+
+func init() {
+	zhLang = map[string]string{
+		"SUCCESS":                        "成功",
+		"ErrNoFound":                     "记录未找到",
+		"ErrUserPassword":                "账号或密码有误,请重试",
+		"ErrCreateSession":               "账号或密码有误,请重试",
+		"ErrUserLocked":                  "账号已经被锁定，请联系管理员",
+		"ErrSession":                     "无效会话或会话已过期",
+		"ErrDefListSearchNotSupport":     "该资源不支持通用查找",
+		"ErrDefListSearchAbnormalField":  "资源过滤字段异常",
+		"ErrDefListSearchTempleNotFound": "资源列表查询模版未找到",
+		"ErrDefFirstXNotSupport":         "该资源不支持通用查看",
+		"ErrModNotFound":                 "模块不存在",
+		"ErrPatchSettings":               "修改模块配置失败",
+		"ErrDeleteInnerMod":              "只能删除外置模块",
+		"ErrCleanRoutes":                 "清理API路由表异常",
+		"ErrCleanMenus":                  "清理菜单表异常",
+		"ErrDelModule":                   "删除模块信息错误",
+		"ErrRouteNotFound":               "请求接口不存在",
+		"ErrInnerRouteNotFound":          "请求接口不存在",
+		"ErrArgsURLScheme":               "解析URL异常找不到协议",
+		"ErrArgsRangeType":               "区间类型非数字",
+		"ErrArgsRangeCMDTYPE":            "非法区间比较符",
+		"ErrArgsRangeNum":                "区间参数缺失",
+		"ErrArgsRange":                   "区间范围异常",
+		"ErrItemXNotFound":               "资源未找到",
+		"ErrInnerServer":                 "内部服务异常",
+		"ErrAssetValueNoConfig":          "资产服务无配置",
+		"ErrCodeNotFound":                "命令码不存在",
+		"ErrLoadSettings":                "加载配置失败",
+		"ErrNoSettingsFound":             "没有相应的配置",
+		"ErrParseSettings":               "解析相应配置异常",
+		"ErrOpenRpcClient":               "创建RPC客户端失败",
+		"ErrNoEtcdConfig":                "ETCD配置为空",
+		"ErrDuplicateKey":                "记录值重复",
+		"ErrSessionTimeout":              "会话过期",
+	}
 }

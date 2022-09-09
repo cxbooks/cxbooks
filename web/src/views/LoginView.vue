@@ -1,17 +1,15 @@
 <template>
     <div class="login">
-        <h1>This is an login page</h1>
+        <v-alert v-if="alert.msg" :type="alert.type">{{ alert.msg }}</v-alert>
         <v-row justify="center" class="fill-center">
             <v-col xs="12" sm="8" md="4">
                 <v-card v-if="show_login" class="elevation-12">
                     <v-toolbar dark color="primary">
                         <v-toolbar-title>欢迎访问</v-toolbar-title>
-                        <v-spacer></v-spacer>
-                        <v-btn v-if="true" rounded color="green" to="/signup">注册</v-btn>
                     </v-toolbar>
                     <v-card-text>
                         <v-form @submit.prevent="do_login">
-                            <v-text-field prepend-icon="person" v-model="username" label="用户名" type="text">
+                            <v-text-field prepend-icon="person" v-model="account" label="用户名" type="text">
                             </v-text-field>
                             <v-text-field prepend-icon="lock" v-model="password" label="密码" type="password"
                                 id="password">
@@ -37,7 +35,6 @@
                             </template>
                         </div>
                     </v-card-text>
-                    <v-alert v-if="alert.msg" :type="alert.type">{{ alert.msg }}</v-alert>
                 </v-card>
 
                 <v-card v-else class="elevation-12">
@@ -56,7 +53,7 @@
                             <v-btn rounded dark color="red" @click="do_reset">重置密码</v-btn>
                         </div>
                     </v-card-text>
-                    <v-alert v-if="alert.msg" :type="alert.type">{{ alert.msg }}</v-alert>
+
                 </v-card>
             </v-col>
         </v-row>
@@ -70,7 +67,7 @@ import { useAuthStore } from '@/stores';
 export default {
     name: 'LoginView',
     data: () => ({
-        username: "",
+        account: "",
         password: "",
         alert: {
             type: "error",
@@ -88,6 +85,8 @@ export default {
     }),
     
     created() {
+
+        
         // this.$store.commit("navbar", false);
         // this.$backend("/user/info").then((rsp) => {
         //     this.$store.commit("login", rsp);
@@ -102,15 +101,17 @@ export default {
         do_login: function() {
             const authStore = useAuthStore();
             
-            return authStore.login(this.username, this.password)
+            return authStore.login(this.account, this.password)
                 .catch(error => { 
-                    // this.alert.type = error;
-                    console.log(error);
+                    this.alert.msg = error;
+                    setTimeout(() => {
+                        this.alert.msg = ""
+                    }, 3000)
                  });
         },
         do_reset: function () {
             var data = new URLSearchParams();
-            data.append("username", this.username);
+            data.append("username", this.account);
             data.append("email", this.email);
             // this.$backend("/user/reset", {
             //     method: "POST",

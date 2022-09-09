@@ -7,6 +7,13 @@ export const fetchWrapper = {
     delete: request('DELETE')
 };
 
+export const backend = {
+    get: request('GET'),
+    post: request('POST'),
+    put: request('PUT'),
+    delete: request('DELETE')
+};
+
 function request(method) {
     return (url, body) => {
         const requestOptions = {
@@ -14,7 +21,7 @@ function request(method) {
             headers: {}
         };
         if (body) {
-            requestOptions.headers['Content-Type'] = 'application/json';
+            requestOptions.headers['Content-Type'] = 'application/json; charset=utf-8';
             requestOptions.body = JSON.stringify(body);
         }
         return fetch(url, requestOptions).then(handleResponse);
@@ -37,6 +44,7 @@ function request(method) {
 
 function handleResponse(response) {
     return response.text().then(text => {
+
         const data = text && JSON.parse(text);
 
         if (!response.ok) {
@@ -48,6 +56,10 @@ function handleResponse(response) {
 
             const error = (data && data.message) || response.statusText;
             return Promise.reject(error);
+        }
+
+        if (data.code != 0) { //内部状态码不为0
+            return Promise.reject(data.message);
         }
 
         return data;

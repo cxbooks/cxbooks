@@ -2,8 +2,6 @@
 package server
 
 import (
-	"log"
-
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap/zapcore"
 )
@@ -29,17 +27,17 @@ func RegRoute(router *gin.Engine) {
 
 	// (r"/api/welcome", Welcome),
 
-	router.POST("api/user/sign_in", SignIn)
+	router.POST("api/user/login", SignInHandler)
 
 	user := router.Group("/api/user", OauthMiddleware)
 
-	user.GET("/info", UserInfo)
-	user.GET("/messages", UserMessages)
-	user.POST("/sign_out", SignOut)
+	user.GET("/info", UserInfoHandler)
+	user.GET("/messages", UserMessagesHandler)
+	user.POST("/logout", SignOutHandler)
 	// user.POST("/sign_up", SignUp)
-	user.POST("/update", UserUpdate)
-	user.POST("/reset", UserReset)
-	user.POST("/active/send", UserSendActive)
+	user.POST("/update", UserUpdateHandler)
+	user.POST("/reset", UserResetHandler)
+	user.POST("/active/send", UserSendActiveHandler)
 
 	// (r"/api/active/(.*)/(.*)", UserActive),
 	// (r"/api/done/", Done),
@@ -86,10 +84,10 @@ func initGinRoute(level zapcore.Level) *gin.Engine {
 		gin.SetMode(gin.ReleaseMode)
 	}
 
-	log.SetFlags(log.LstdFlags) // gin will disable log flags
+	// log.SetFlags(log.LstdFlags) // gin will disable log flags
 
 	router := gin.New()
-	router.Use(gin.Recovery())
+	router.Use(gin.Recovery(), gin.Logger())
 
 	RegRoute(router)
 

@@ -10,7 +10,7 @@ import (
 // AutoMigrate 初始化数据表
 func AutoMigrate(db *Store) error {
 
-	if err := db.AutoMigrate(&User{}, &Tag{}, &Message{}, &Author{}); err != nil {
+	if err := db.AutoMigrate(&User{}, &Tag{}, &Session{}, &Message{}, &Author{}); err != nil {
 		return err
 	}
 

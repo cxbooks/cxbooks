@@ -14,5 +14,16 @@ module.exports = defineConfig({
     vuetify: {
 			// https://github.com/vuetifyjs/vuetify-loader/tree/next/packages/vuetify-loader
 		}
+  },
+  devServer: {
+    proxy: {
+      "/api": {
+        target: "http://127.0.0.1:9999",
+        secure: false,
+        logLevel: "debug"
+      }
+    }
   }
 })
+
+

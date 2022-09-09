@@ -71,9 +71,9 @@ func InitConfig() *Config {
 	defer zlog.Flush()
 
 	zlog.I("当前版本: ", VERSION)
-	zlog.I(`Git Commit Hash :`, githash)
-	zlog.I(`UTC Build Time :`, buildstamp)
-	zlog.I(`当前日志等级为 :`, config.LogLevel.CapitalString())
+	zlog.I(`Git Commit Hash: `, githash)
+	zlog.I(`UTC Build Time: `, buildstamp)
+	zlog.I(`当前日志等级为: `, config.LogLevel.CapitalString())
 	ConfFile, _ = filepath.Abs(ConfFile)
 
 	if _, err := os.Stat(ConfFile); os.IsNotExist(err) {
