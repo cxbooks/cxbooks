@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/cxbooks/cxbooks/zlog"
+	"github.com/cxbooks/cxbooks/server/zlog"
 )
 
 type HttpClient struct {

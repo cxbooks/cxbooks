@@ -6,8 +6,7 @@ import (
 	"time"
 
 	"github.com/bluele/gcache"
-	"github.com/cxbooks/cxbooks/server/tools"
-	"github.com/cxbooks/cxbooks/zlog"
+	"github.com/cxbooks/cxbooks/server/zlog"
 	"go.uber.org/zap/zapcore"
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/postgres"
@@ -30,6 +29,7 @@ const (
 type Store struct {
 	*gorm.DB
 	LRU gcache.Cache
+	// KV  *nutsdb.DB
 }
 
 // Opt PG 数据库配置
@@ -90,9 +90,32 @@ func WaitDB(ctx context.Context, opt *Opt) (*Store, error) {
 		return nil
 	}
 
-	err = tools.Wait(ctx, 30, f)
+	err = Wait(ctx, 30, f)
 
 	return store, err
+}
+
+// Wait 等待某个函数执行成功
+func Wait(ctx context.Context, sleep time.Duration, f func() error) error {
+
+	if err := f(); err == nil {
+		return nil
+	}
+	for {
+
+		ticker := time.NewTicker(time.Second * sleep)
+
+		select {
+		case <-ctx.Done():
+			return ctx.Err()
+		case <-ticker.C:
+			if err := f(); err == nil {
+				return nil
+			}
+
+		}
+	}
+
 }
 
 // DSN return gorm v2 Dialector

@@ -8,7 +8,7 @@ import (
 
 	"github.com/cxbooks/cxbooks/server"
 
-	"github.com/cxbooks/cxbooks/zlog"
+	"github.com/cxbooks/cxbooks/server/zlog"
 )
 
 func main() {

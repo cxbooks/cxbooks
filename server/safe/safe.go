@@ -3,7 +3,7 @@ package safe
 import (
 	"runtime/debug"
 
-	"github.com/cxbooks/cxbooks/zlog"
+	"github.com/cxbooks/cxbooks/server/zlog"
 )
 
 // Go starts a recoverable goroutine.

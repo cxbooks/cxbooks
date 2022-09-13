@@ -50,6 +50,7 @@ func BookPush(c *gin.Context) {
 func BookRefer(c *gin.Context) {
 
 }
+
 func BookRead(c *gin.Context) {
 
 }

@@ -9,7 +9,7 @@ import (
 	"sync"
 
 	"github.com/cxbooks/cxbooks/server/model"
-	"github.com/cxbooks/cxbooks/zlog"
+	"github.com/cxbooks/cxbooks/server/zlog"
 	"github.com/gin-gonic/gin"
 )
 

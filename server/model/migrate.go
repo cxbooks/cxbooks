@@ -3,14 +3,14 @@ package model
 import (
 	"time"
 
-	"github.com/cxbooks/cxbooks/zlog"
+	"github.com/cxbooks/cxbooks/server/zlog"
 	"gorm.io/gorm/clause"
 )
 
 // AutoMigrate 初始化数据表
 func AutoMigrate(db *Store) error {
 
-	if err := db.AutoMigrate(&User{}, &Tag{}, &Session{}, &Message{}, &Author{}); err != nil {
+	if err := db.AutoMigrate(&User{}, &Book{}, &Tag{}, &Session{}, &Message{}, &Author{}); err != nil {
 		return err
 	}
 

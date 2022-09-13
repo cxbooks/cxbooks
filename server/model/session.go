@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/cxbooks/cxbooks/zlog"
+	"github.com/cxbooks/cxbooks/server/zlog"
 	"gorm.io/gorm"
 )
 

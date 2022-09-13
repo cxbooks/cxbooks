@@ -4,9 +4,11 @@ go 1.19
 
 require (
 	github.com/bluele/gcache v0.0.2
+	github.com/cxbooks/epub v0.0.0-20220913085452-dd45a34685a3
 	github.com/gin-gonic/gin v1.8.1
 	github.com/jinzhu/configor v1.2.1
 	github.com/natefinch/lumberjack v2.0.0+incompatible
+	github.com/xujiajun/nutsdb v0.10.0
 	go.uber.org/zap v1.23.0
 	gorm.io/driver/mysql v1.3.6
 	gorm.io/driver/postgres v1.3.9
@@ -15,8 +17,10 @@ require (
 )
 
 require (
-	golang.org/x/mod v0.6.0-dev.0.20220419223038-86c51ed26bb4 // indirect
-	golang.org/x/tools v0.1.12 // indirect
+	github.com/bwmarrin/snowflake v0.3.0 // indirect
+	github.com/pkg/errors v0.9.1 // indirect
+	github.com/xujiajun/mmap-go v1.0.1 // indirect
+	github.com/xujiajun/utils v0.0.0-20190123093513-8bf096c4f53b // indirect
 )
 
 require (
@@ -47,8 +51,8 @@ require (
 	github.com/ugorji/go/codec v1.2.7 // indirect
 	go.uber.org/atomic v1.7.0 // indirect
 	go.uber.org/multierr v1.6.0 // indirect
-	golang.org/x/crypto v0.0.0-20220214200702-86341886e292 // indirect
-	golang.org/x/net v0.0.0-20220722155237-a158d28d115b // indirect
+	golang.org/x/crypto v0.0.0-20220214200702-86341886e292
+	golang.org/x/net v0.0.0-20220909164309-bea034e7d591 // indirect
 	golang.org/x/sys v0.0.0-20220908164124-27713097b956 // indirect
 	golang.org/x/text v0.3.7 // indirect
 	google.golang.org/protobuf v1.28.0 // indirect
