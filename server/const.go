@@ -17,6 +17,7 @@ type Code int32
 // 状态码
 const (
 	SUCCESS                        Code = 0    //0: 成功
+	ErrPageNotFound                Code = 404  //404: 页面未找到
 	ErrNoFound                     Code = 404  //404: 记录未找到
 	ErrUserPassword                Code = 1109 //1109: 账号或密码有误,请重试
 	ErrCreateSession               Code = 1111 //1111: 账号或密码有误,请重试
@@ -89,6 +90,7 @@ func (r *Resp) With(data interface{}) *Resp {
 func init() {
 	zhLang = map[string]string{
 		"SUCCESS":                        "成功",
+		"ErrPageNotFound":                "页面未找到",
 		"ErrNoFound":                     "记录未找到",
 		"ErrUserPassword":                "账号或密码有误,请重试",
 		"ErrCreateSession":               "账号或密码有误,请重试",

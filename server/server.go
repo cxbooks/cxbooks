@@ -16,6 +16,7 @@ import (
 var (
 	srv      *Service  //全局单例
 	initOnce sync.Once //
+
 )
 
 type Store = model.Store

@@ -89,6 +89,10 @@ func initGinRoute(level zapcore.Level) *gin.Engine {
 	router := gin.New()
 	router.Use(gin.Recovery(), gin.Logger())
 
+	
+
+	embedVue(router)
+
 	RegRoute(router)
 
 	return router

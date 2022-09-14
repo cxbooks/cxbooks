@@ -1,6 +1,9 @@
 Dockerfile
+
 .dockerignore
-cmd
 docs
-server
-web
+.git
+build
+web/node_modules
+
+
