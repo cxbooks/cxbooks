@@ -21,13 +21,16 @@ export
 
 all : cxbooks
 
-cxbooks: 
+
+vue:
+	@rm -rf server/dist; cd web; npm install && npm run build;cd -
+
+cxbooks: vue
 	@echo "创建 cxbooks-${VERSION}目录"
 	@#debian上直接使用mkdir不会创建，需要额外调用 bash-c 
 	@bash -c "mkdir -p ${DESTDIR}/cxbooks-${VERSION}/{ssl,conf,bin,i18n}"
 	@echo "拷贝配置文件"
 	@cp -f ${PROJECT_PATH}/cmd/conf.yml ${DESTDIR}/cxbooks-${VERSION}/conf/conf.yml
-	@rm -rf server/dist; cd web; npm install && npm run build;cd -
 
 	@echo "编译 github.com/cxbooks/cxbooks/cmd"
 	@env GOARCH=amd64 go build -ldflags ${LDFLAGS} -o ${DESTDIR}/cxbooks-${VERSION}/bin/cxbooks github.com/cxbooks/cxbooks/cmd

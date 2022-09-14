@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build && mv dist ../server/",
+    "build": "vue-cli-service build --no-clean --dest ../server/dist",
     "build-in-docker": "vue-cli-service build",
     "lint": "vue-cli-service lint"
   },
