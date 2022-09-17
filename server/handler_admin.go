@@ -24,7 +24,12 @@ func AdminBookList(c *gin.Context) {
 func ScanList(c *gin.Context) {
 
 }
+
 func ScanRun(c *gin.Context) {
+
+	
+	
+
 
 }
 func ScanStatus(c *gin.Context) {

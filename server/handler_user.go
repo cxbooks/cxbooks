@@ -92,6 +92,8 @@ func SignInHandler(c *gin.Context) {
 
 func SignOutHandler(c *gin.Context) {
 
+	
+
 }
 func UserUpdateHandler(c *gin.Context) {
 

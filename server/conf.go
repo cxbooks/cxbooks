@@ -28,6 +28,7 @@ type Config struct {
 	TLSAddr  string `yaml:"tls_addr"` //是否开启https
 	CertFile string `yaml:"cert_file"`
 	KeyFile  string `yaml:"key_file"`
+	DataPath string `yaml:"data_path"`
 
 	DBOpt *model.Opt `yaml:"db_opt" json:"db_opt"`
 
@@ -108,6 +109,10 @@ func InitConfig() *Config {
 
 	if config.DBOpt != nil {
 		config.DBOpt.LogLevel = config.LogLevel
+	}
+
+	if config.DataPath == "" { //监听地址必须只是配置一个
+		config.DataPath = `/data/cache/`
 	}
 
 	return config

@@ -9,6 +9,7 @@ import (
 	"sync"
 
 	"github.com/cxbooks/cxbooks/server/model"
+	"github.com/cxbooks/cxbooks/server/tools"
 	"github.com/cxbooks/cxbooks/server/zlog"
 	"github.com/gin-gonic/gin"
 )
@@ -27,6 +28,8 @@ type Service struct {
 	cfg  *Config      //
 
 	router *gin.Engine //http 路由表
+
+	scanner *tools.ScannerManager
 
 	orm *Store
 
@@ -49,6 +52,13 @@ func NewServiceWithConfig(cf *Config) *Service {
 
 	//opendb
 	if cf == nil || (cf.DBOpt == nil) {
+		panic(`数据库配置异常，HOST空异常`)
+	}
+
+	_, err := os.Stat(cf.DataPath)
+	if os.IsNotExist(err) {
+		// path/to/whatever does not exist
+		zlog.D(`缓存目录`, cf.DataPath, `无法访问或者不存在 `, err)
 		panic(`数据库配置异常，HOST空异常`)
 	}
 
@@ -94,6 +104,8 @@ func (m *Service) StartContext(ctx context.Context) (err error) {
 		//TODO
 		m.router = initGinRoute(m.cfg.LogLevel)
 
+		m.scanner, _ = tools.NewScannerManager(m.ctx, m.cfg.DataPath, m.orm)
+
 		m.listen()
 	}()
 
@@ -117,6 +129,11 @@ func (m *Service) GracefulStop() {
 		zlog.I(`关闭数据库连接...`)
 		m.orm.Close()
 	}
+
+	if m.scanner != nil {
+		m.scanner.Stop()
+	}
+
 }
 
 func (m *Service) Store() *Store {

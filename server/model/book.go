@@ -1,9 +1,13 @@
 package model
 
 import (
+	"bytes"
+	"crypto/md5"
+	"encoding/hex"
 	"errors"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/cxbooks/cxbooks/server/zlog"
@@ -24,7 +28,9 @@ type Book struct {
 	// SubTitle represents the EPUB sub-titles.
 	SubTitle   string `json:"sub_title,omitempty"`
 	Language   string `json:"language"`
+	UUID       string `json:"language"`
 	ISBN       string `json:"isbn"`
+	ASIN       string `json:"isbn"`
 	Identifier string `json:"identifier"`
 	Author     string `json:"author"`
 	AuthorURL  string `json:"author_url"`
@@ -32,7 +38,7 @@ type Book struct {
 	// Publisher identifies the publication's publisher.
 	Publisher string `json:"publisher"`
 	// Description provides a description of the publication's content.
-	Description string   `json:"description,omitempty"`
+	Description string   `json:"description,omitempty" gorm:"type:text,comment:封面图片地址"`
 	Tags        []string `json:"tags" gorm:"-"` //sqlite 没法存储数组
 	// Series is the series to which this book belongs to.
 	Series string `json:",omitempty"`
@@ -46,17 +52,30 @@ type Book struct {
 
 	CountVisit    int64 `json:"count_visit"`
 	CountDownload int64 `json:"count_download"`
+
+	//解析图片时临时存储封面图片数据
+	coverData []byte `json:"-" gorm:"-"`
 }
 
 // Save 存储图书元数据到数据库
 func (book *Book) Save(store *Store) error {
 	//TODO before save data
+	// err = kv.Write(coverURL, fp, 0)
+	// 	if err != nil {
+	// 		zlog.E(`存储封面失败,`, book.Path, `失败：`, err.Error())
+	// 		return err
+	// 	}
+
 	return store.Save(book).Error
 
 }
 
+func (book *Book) GetCoverData() []byte {
+	return book.coverData
+}
+
 // GetMetadataFromFile reads metadata from an epub file.
-func (book *Book) GetMetadataFromFile(kv *KV) error {
+func (book *Book) GetMetadataFromFile() error {
 
 	_, err := os.Stat(book.Path)
 	if os.IsNotExist(err) {
@@ -90,15 +109,13 @@ func (book *Book) GetMetadataFromFile(kv *KV) error {
 			return err
 		}
 
-		coverURL := `uuid` + book.CoverURL //TODO 这里要用bookid 获取其他标记避免冲突
+		buf := new(bytes.Buffer)
+		buf.ReadFrom(fp)
 
-		err = kv.Write(coverURL, fp, 0)
-		if err != nil {
-			zlog.E(`存储封面失败,`, book.Path, `失败：`, err.Error())
-			return err
-		}
+		book.coverData = buf.Bytes()
+
 		//将 CoverURL 地址覆盖成解析后的地址
-		book.CoverURL = coverURL
+		book.CoverURL = book.Identifier + book.CoverURL //TODO 这里要用bookid 获取其他标记避免冲突
 
 	}
 
@@ -115,12 +132,31 @@ func (m *Book) parseOPF(opf *epub.PackageDocument) {
 	m.Publisher = elt2FirstStr(mdata.Publisher)
 
 	//TODO get uuid
-	// for _, id := range mdata.Identifier {
-	// 	m.Identifier = append(m.Identifier, Identifier{
-	// 		Value:  id.Value,
-	// 		Scheme: id.Scheme,
-	// 	})
-	// }
+
+	hasher := md5.New()
+	for _, id := range mdata.Identifier {
+		hasher.Write([]byte(id.Value))
+
+		if id.ID == `bookid` {
+			m.UUID = strings.TrimPrefix(`urn:uuid:`, id.Value)
+			continue
+		}
+
+		if id.Scheme == `ASIN` {
+			m.ASIN = id.Value
+			continue
+		}
+
+		if id.Scheme == `ISBN` {
+			m.ISBN = id.Value
+			continue
+		}
+
+		// m.Identifier = append(m.Identifier, Identifier{
+
+		// })
+	}
+	m.Identifier = hex.EncodeToString(hasher.Sum(nil))
 
 	if len(mdata.Creator) > 0 {
 		m.Title = mdata.Title[0].Value

@@ -14,12 +14,16 @@ func AuthorBooksUpdate(c *gin.Context) {
 func PubBooksUpdate(c *gin.Context) {
 
 }
+
 func Index(c *gin.Context) {
 
 }
+
+
 func SearchBook(c *gin.Context) {
 
 }
+
 func RecentBook(c *gin.Context) {
 
 }
