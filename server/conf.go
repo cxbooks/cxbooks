@@ -112,7 +112,7 @@ func InitConfig() *Config {
 	}
 
 	if config.DataPath == "" { //监听地址必须只是配置一个
-		config.DataPath = `/data/cache/`
+		config.DataPath = `/data/db`
 	}
 
 	return config

@@ -19,11 +19,9 @@ func RegRoute(router *gin.Engine) {
 
 	admin.POST("/api/admin/scan/list", ScanList)
 	admin.POST("/api/admin/scan/run", ScanRun)
-	admin.POST("/api/admin/scan/status", ScanStatus)
-	admin.POST("/api/admin/scan/delete", ScanDelete)
-	admin.POST("/api/admin/scan/mark", ScanMark)
-	admin.POST("/api/admin/import/run", ImportRun)
-	admin.POST("/api/admin/import/status", ImportStatus)
+	admin.GET("/api/admin/scan/status", ScanStatus)
+	admin.DELETE("/api/admin/scan", ScanDelete)
+	// admin.POST("/api/admin/scan/mark", ScanMark)
 
 	// (r"/api/welcome", Welcome),
 
@@ -69,6 +67,8 @@ func RegRoute(router *gin.Engine) {
 	router.GET("/api/books/:book_id/refer", OauthMiddleware, BookRefer)
 	router.GET("/read/:book_id", OauthMiddleware, BookRead)
 
+	router.GET("/book/cover/*book_cover_path", OauthMiddleware, ProxyImageHandler)
+
 	//  (r"/get/pcover", ProxyImageHandler),
 	//     (r"/get/progress/([0-9]+)", ProgressHandler),
 	//     (r"/get/extract/(.*)", web.StaticFileHandler, {"path": CONF["extract_path"]}),
@@ -88,8 +88,6 @@ func initGinRoute(level zapcore.Level) *gin.Engine {
 
 	router := gin.New()
 	router.Use(gin.Recovery(), gin.Logger())
-
-	
 
 	embedVue(router)
 

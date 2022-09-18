@@ -13,7 +13,7 @@ import (
 	"github.com/cxbooks/cxbooks/server/zlog"
 )
 
-const MaxThread = 1
+// const MaxThread = 1
 
 type ScanStatus struct {
 	Running bool     `json:"running"`
@@ -22,9 +22,8 @@ type ScanStatus struct {
 }
 
 type ScannerManager struct {
-	kv         *model.KV
-	store      *model.Store
-	concurrent int
+	kv    *model.KV
+	store *model.Store
 
 	ctx context.Context
 
@@ -50,6 +49,8 @@ func NewScannerManager(ctx context.Context, dbpath string, store *model.Store) (
 		ctx:   ctx,
 	}
 
+	zlog.I(`初始化扫描管理`)
+
 	_, err := os.Stat(dbpath)
 	if os.IsNotExist(err) {
 		// path/to/whatever does not exist
@@ -62,7 +63,7 @@ func NewScannerManager(ctx context.Context, dbpath string, store *model.Store) (
 	return scanner, err
 }
 
-func (m *ScannerManager) isRunning() bool {
+func (m *ScannerManager) IsRunning() bool {
 	m.RLock()
 	defer m.RUnlock()
 	return m.scan != nil
@@ -75,7 +76,7 @@ func (m *ScannerManager) Status() ScanStatus {
 		Errs:    []string{},
 	}
 
-	s.Running = m.isRunning()
+	s.Running = m.IsRunning()
 	if s.Running {
 		s.Count = m.scan.Count
 		s.Errs = m.scan.Errs
@@ -85,24 +86,23 @@ func (m *ScannerManager) Status() ScanStatus {
 
 }
 
-func (m *ScannerManager) Start(path string) error {
+func (m *ScannerManager) Start(path string, maxThread int) {
 
-	if m.isRunning() {
-		return errors.New(`扫描器正在运行中`)
+	if m.IsRunning() {
+		zlog.E(`扫描器已经在执行，放弃执行`)
+		return
 	}
+	zlog.I(`启动文件目录扫描`)
+	m.NewScan(path, maxThread)
 
-	_, err := os.Stat(path)
-	if os.IsNotExist(err) {
-		// path/to/whatever does not exist
-		zlog.D(`缓存目录`, path, `无法访问或者不存在 `, err)
-		return errors.New(`缓存目录无法访问或者不存在`)
-	}
+}
 
-	//new scanner
-	m.scan = NewScan(path, m.concurrent)
+func (m *ScannerManager) NewScan(path string, maxThread int) {
+	m.Lock()
+	m.scan = NewScan(path, maxThread) //new scanner
+	m.Unlock()
 
-	m.scan.Start(m.ctx, m.kv, m.store)
-	return nil
+	m.scan.Start(m.ctx, m.kv, m.store, maxThread)
 }
 
 func (m *ScannerManager) Stop() {
@@ -112,11 +112,6 @@ func (m *ScannerManager) Stop() {
 
 	if m.scan != nil {
 		m.scan.Stop()
-	}
-
-	if m.kv != nil {
-		zlog.I(`退出扫描缓存DB`)
-		m.kv.Close()
 	}
 
 }
@@ -145,11 +140,11 @@ func NewScan(root string, concurrent int) *Scanner {
 
 }
 
-func (m *Scanner) Start(ctx context.Context, kv *model.KV, store *model.Store) {
+func (m *Scanner) Start(ctx context.Context, kv *model.KV, store *model.Store, maxThread int) {
 
 	books := m.Walk(ctx)
 
-	concurrent := make(chan struct{}, MaxThread)
+	concurrent := make(chan struct{}, maxThread)
 
 	errChan := make(chan string)
 

@@ -17,6 +17,7 @@ type Code int32
 // 状态码
 const (
 	SUCCESS                        Code = 0    //0: 成功
+	ErrReqArgs                     Code = 400  //400: 请求参数异常
 	ErrPageNotFound                Code = 404  //404: 页面未找到
 	ErrNoFound                     Code = 404  //404: 记录未找到
 	ErrUserPassword                Code = 1109 //1109: 账号或密码有误,请重试
@@ -51,6 +52,10 @@ const (
 	ErrNoEtcdConfig                Code = 8126 //8126: ETCD配置为空
 	ErrDuplicateKey                Code = 8127 //8127: 记录值重复
 	ErrSessionTimeout              Code = 8128 //8128: 会话过期
+
+	ErrScannerIsRunning Code = 9000 //9000: 扫描已经在执行中
+	ErrScanPathNotExist Code = 9001 //9001: 扫描路径不存在
+	ErrScanStartFailed  Code = 9002 //9002: 启动扫描失败
 
 	CacheKeyUserID = `/user/users/user_id/`
 
@@ -90,6 +95,7 @@ func (r *Resp) With(data interface{}) *Resp {
 func init() {
 	zhLang = map[string]string{
 		"SUCCESS":                        "成功",
+		"ErrReqArgs":                     "请求参数异常",
 		"ErrPageNotFound":                "页面未找到",
 		"ErrNoFound":                     "记录未找到",
 		"ErrUserPassword":                "账号或密码有误,请重试",

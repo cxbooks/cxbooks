@@ -17,7 +17,7 @@ cert_file: '/ssl/tls.crt'
 
 db_opt:
   driver: 'sqlite'
-  host: '/data/cxbooks.db'
+  host: '/data/db/cxbooks.db'
   user: 'postgres'
   passwd: ''
   port: 0

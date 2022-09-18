@@ -12,49 +12,123 @@ import (
 
 	"github.com/cxbooks/cxbooks/server/zlog"
 	"github.com/cxbooks/epub"
+	"gorm.io/gorm"
 )
 
 type Book struct {
-	ID int64 `json:"id" gorm:"primaryKey;comment:ID"`
-
+	ID    int64     `json:"id" gorm:"primaryKey;comment:ID"`
 	Size  int64     `json:"size" gorm:"comment:文件大小"`
 	Path  string    `json:"path" gorm:"comment:文件路径"`
 	CTime time.Time `json:"ctime" form:"ctime" gorm:"column:ctime;autoCreateTime;comment:创建时间"`
-	UTime time.Time `json:"utime" gorm:"comment:文件更新时间"`
+	UTime time.Time `json:"utime" gorm:"column:utime;comment:更新时间"`
 
-	CoverURL string `json:"cover_url" gorm:"comment:封面图片地址"`
-
-	Title string `json:"title" gorm:"type:varchar(255);comment:用户标签列表"`
+	Title string `json:"title" gorm:"index:idx_book_title;type:varchar(200);comment:标题"`
 	// SubTitle represents the EPUB sub-titles.
-	SubTitle   string `json:"sub_title,omitempty"`
-	Language   string `json:"language"`
-	UUID       string `json:"language"`
-	ISBN       string `json:"isbn"`
-	ASIN       string `json:"isbn"`
-	Identifier string `json:"identifier"`
-	Author     string `json:"author"`
-	AuthorURL  string `json:"author_url"`
-	AuthorSort string `json:"author_sort"`
+	SubTitle   string `json:"sub_title,omitempty" gorm:"type:varchar(255);comment:子标题"`
+	Language   string `json:"language" gorm:"type:varchar(50);comment:图书语言"`
+	CoverURL   string `json:"cover_url" gorm:"type:varchar(255);comment:封面URL"`
+	UUID       string `json:"uuid" gorm:"type:varchar(50);comment:图书UUI"`
+	ISBN       string `json:"isbn" gorm:"type:varchar(50);comment:ISBN"`
+	ASIN       string `json:"asin" gorm:"type:varchar(50);comment:AWS ID"`
+	Identifier string `json:"identifier" gorm:"type:varchar(50);comment:唯一ID"`
+	Author     string `json:"author" gorm:"index:idx_book_author;type:varchar(200);comment:作者"`
+	AuthorURL  string `json:"author_url" gorm:"type:varchar(255);comment:作者URL"`
+	AuthorSort string `json:"author_sort" gorm:"type:varchar(255);comment:作者列表"`
 	// Publisher identifies the publication's publisher.
-	Publisher string `json:"publisher"`
+	Publisher string `json:"publisher" gorm:"type:varchar(200);comment:用户标签列表"`
 	// Description provides a description of the publication's content.
-	Description string   `json:"description,omitempty" gorm:"type:text,comment:封面图片地址"`
+	Description string   `json:"description,omitempty" gorm:"type:text;comment:描述信息"`
 	Tags        []string `json:"tags" gorm:"-"` //sqlite 没法存储数组
 	// Series is the series to which this book belongs to.
-	Series string `json:",omitempty"`
+	Series string `json:",omitempty" gorm:"type:varchar(200);comment:用户标签列表"`
 	// SeriesIndex is the position in the series to which the book belongs to.
-	SeriesIndex string `json:",omitempty"`
-	PublishDate string `json:"pubdate"`
+	SeriesIndex string `json:",omitempty" gorm:"type:varchar(200);comment:用户标签列表"`
+	PublishDate string `json:"pubdate" gorm:"type:varchar(50);comment:用户标签列表"`
 
 	Rating float32 `json:"rating" gorm:"comment:用户标签列表"`
 
-	PublisherURL string `json:"publisher_url"`
+	PublisherURL string `json:"publisher_url" gorm:"type:varchar(255);comment:用户标签列表"`
 
-	CountVisit    int64 `json:"count_visit"`
-	CountDownload int64 `json:"count_download"`
+	CountVisit    int64 `json:"count_visit" gorm:"default:0;comment:用户标签列表"`
+	CountDownload int64 `json:"count_download" gorm:"default:0;comment:用户标签列表"`
 
 	//解析图片时临时存储封面图片数据
 	coverData []byte `json:"-" gorm:"-"`
+}
+
+type BookResp struct {
+	Total int    `json:"total"`
+	Books []Book `json:"books"`
+}
+
+func RandomBooks(store *Store, limit int) (BookResp, error) {
+
+	books := []Book{}
+
+	if limit == 0 {
+		zlog.I(`限制为空，调整为默认值10`)
+		limit = 10
+	}
+	// SELECT * FROM table ORDER BY RANDOM() LIMIT 1;
+	err := store.Table(`books`).Limit(limit).Order(`RANDOM()`).Find(&books).Error
+
+	return BookResp{len(books), books}, err
+
+}
+
+// RecentBooks 最新导入到书籍
+func RecentBooks(store *Store, limit int) (BookResp, error) {
+
+	books := []Book{}
+
+	if limit == 0 {
+		zlog.I(`限制为空，调整为默认值10`)
+		limit = 10
+	}
+	// SELECT * FROM table where count_visit = 0 ORDER BY ctime desc LIMIT 1;
+	err := store.Table(`books`).Where(`count_visit = ?`, 0).Limit(limit).Order(`ctime desc`).Find(&books).Error
+
+	return BookResp{len(books), books}, err
+
+}
+
+func FirstBookByID(store *Store, limit int) (Book, error) {
+	//获取Book信息
+
+	panic(`todo`)
+}
+
+// SearchBooks 模糊搜索书籍
+func SearchBooks(store *Store, query *Query) (BookResp, error) {
+
+	resp := BookResp{
+		0,
+		[]Book{},
+	}
+
+	items := []string{`title`, `author`}
+
+	for i := range items {
+		items[i] = items[i] + ` LIKE  '%` + query.Search + `%'`
+	}
+	sql := strings.Join(items, ` OR `)
+
+	tx := store.Model(Book{}).Where(sql)
+
+	{
+		tx = tx.Session(&gorm.Session{})
+		count := int64(0)
+
+		if err := tx.Count(&count).Error; err != nil {
+			return resp, err
+		}
+		resp.Total = int(count)
+	}
+
+	err := tx.Limit(int(query.PageSize)).Offset(int(query.PageNum * query.PageSize)).Find(&resp.Books).Error
+
+	return resp, err
+
 }
 
 // Save 存储图书元数据到数据库
@@ -115,7 +189,7 @@ func (book *Book) GetMetadataFromFile() error {
 		book.coverData = buf.Bytes()
 
 		//将 CoverURL 地址覆盖成解析后的地址
-		book.CoverURL = book.Identifier + book.CoverURL //TODO 这里要用bookid 获取其他标记避免冲突
+		book.CoverURL = filepath.Join(`/book/cover`, book.Identifier, book.CoverURL) //TODO 这里要用bookid 获取其他标记避免冲突
 
 	}
 
@@ -138,7 +212,7 @@ func (m *Book) parseOPF(opf *epub.PackageDocument) {
 		hasher.Write([]byte(id.Value))
 
 		if id.ID == `bookid` {
-			m.UUID = strings.TrimPrefix(`urn:uuid:`, id.Value)
+			m.UUID = strings.TrimPrefix(id.Value, `urn:uuid:`)
 			continue
 		}
 

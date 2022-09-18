@@ -21,9 +21,9 @@ func initStore() *model.Store {
 		LogLevel: zapcore.DebugLevel,
 		Host:     "/data/db/cxbooks.db",
 	}
-
+	zlog.I(`打开数据库连接...`)
 	store, _ := model.OpenDB(opt)
-
+	zlog.I(`打开数据库连接`)
 	return store
 }
 
@@ -36,8 +36,8 @@ func TestScanBooks(t *testing.T) {
 
 	manager, _ := NewScannerManager(context.TODO(), `/data/db`, initStore())
 
-	manager.Start(`/data/ebooks`)
-	ticker := time.NewTicker(200 * time.Millisecond)
+	manager.Start(`/data/ebooks`, 1)
+	ticker := time.NewTicker(3 * time.Second)
 
 	for {
 
@@ -54,13 +54,5 @@ func TestScanBooks(t *testing.T) {
 		}
 
 	}
-
-	//TODO 清理资源
-	zlog.I("收到 ctrl+c 命令....")
-	// for d := range data {
-
-	// 	println(d.Path[0])
-
-	// }
 
 }

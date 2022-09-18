@@ -58,7 +58,9 @@ func OpenDB(opt *Opt) (*Store, error) {
 		// log.E(`链接数据库失败：`,, err.Error())
 		zlog.I(`链接数据库异常:`, opt.String())
 	}
-
+	if opt.LogLevel == zapcore.DebugLevel {
+		db = db.Debug()
+	}
 	return &Store{
 		db,
 		gcache.New(512).LRU().Expiration(time.Second * 180).Build(),
