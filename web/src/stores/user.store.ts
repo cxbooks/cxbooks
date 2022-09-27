@@ -1,17 +1,18 @@
 import { defineStore } from 'pinia';
 
-import { fetchWrapper } from '@/helpers';
 
 import router  from '@/router';
 
-const baseUrl = `${process.env.VUE_APP_API_PATH}`;
+
+
+const baseUrl = `${import.meta.env.VUE_APP_API_PATH}`;
 
 
 export const useAuthStore = defineStore({
     id: 'auth',
     state: () => ({
         // initialize state from local storage to enable user to stay logged in
-        user: JSON.parse(localStorage.getItem('user')),
+        // user: JSON.parse(localStorage.getItem('user')),
         returnUrl: null,
         count: 0,
         loading: true,
@@ -24,22 +25,27 @@ export const useAuthStore = defineStore({
         }
     }),
     actions: {
-        async login(account, password) {
+        async save(account: string, password: string) {
 
-            console.log(process.env.VUE_APP_SECRET)
-            const user = await fetchWrapper.post(`${baseUrl}/user/login`, { account, password });
+
+            localStorage.setItem('user', JSON.stringify(account));
+
+            // this.user = user;
+            // this.submitted = true;
+            router.push(this.returnUrl || '/');
+
 
             // update pinia state
-            this.user = user;
+         
 
             // store user details and jwt in local storage to keep user logged in between page refreshes
-            localStorage.setItem('user', JSON.stringify(user));
+            
 
             // redirect to previous url or default to home page
-            router.push(this.returnUrl || '/');
+            
         },
         logout() {
-            this.user = null;
+            // this.user = null;
             localStorage.removeItem('user');
             router.push('/login');
         }
