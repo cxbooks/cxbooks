@@ -1,29 +1,17 @@
 import { defineStore } from 'pinia';
 
 
-import router  from '@/router';
-
-
-
-const baseUrl = `${import.meta.env.VUE_APP_API_PATH}`;
-
-
-export const useAuthStore = defineStore({
-    id: 'auth',
-    state: () => ({
-        // initialize state from local storage to enable user to stay logged in
-        // user: JSON.parse(localStorage.getItem('user')),
-        returnUrl: null,
-        count: 0,
-        loading: true,
-        nav: true,
-        role: 1000,
-        nickname: "",
-        is_login: false,
-        sys: {
-            socials: [], allow: {},
+export const userStore = defineStore('user_info', {
+    state: () => {
+        return {
+            nickname: "",
+            returnUrl: "",
+            count: 0,
+            loading: true,
+            role: 1000,
+            isLogin: false,
         }
-    }),
+    },
     actions: {
         async save(account: string, password: string) {
 
@@ -32,7 +20,7 @@ export const useAuthStore = defineStore({
 
             // this.user = user;
             // this.submitted = true;
-            router.push(this.returnUrl || '/');
+    
 
 
             // update pinia state
@@ -43,11 +31,6 @@ export const useAuthStore = defineStore({
 
             // redirect to previous url or default to home page
             
-        },
-        logout() {
-            // this.user = null;
-            localStorage.removeItem('user');
-            router.push('/login');
         }
     }
 });

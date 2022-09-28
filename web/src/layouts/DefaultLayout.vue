@@ -11,6 +11,7 @@
       :temporary="$vuetify.display.mdAndDown"
       v-model="drawer"
       expand-on-hover
+      v-if="user.isLogin"
     >
       <SidebarVue />
     </v-navigation-drawer>
@@ -43,12 +44,23 @@ import { ref, onMounted } from "vue";
 import SidebarVue from "@/components/Sidebar.vue";
 import HeaderVue from "@/components/Header.vue";
 
+import { userStore } from '@/stores';
+
 const drawer = ref(undefined || true);
 const innerW = window.innerWidth;
+// const 
+
+const user = userStore();
+
+
 
 onMounted(() => {
   if (innerW < 950) {
     drawer.value = !drawer.value;
   }
+
 });
+
 </script>
+
+

@@ -43,6 +43,7 @@
   </div>
 </template>
 <script setup lang="ts">
+  
 import LogoDark from "@/components/LogoDark.vue";
 
 const sidebarMenu = [

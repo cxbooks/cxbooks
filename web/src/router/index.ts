@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-
+import { userStore } from '@/stores';
 
 
 const router = createRouter({
@@ -53,6 +53,18 @@ const router = createRouter({
 
   ]
 })
+
+router.beforeEach(async (to) => {
+  // redirect to login page if not logged in and trying to access a restricted page
+  const publicPages = ['/login'];
+  const authRequired = !publicPages.includes(to.path);
+  const auth = userStore();
+
+  if (authRequired &&!auth.isLogin) {
+    auth.returnUrl = to.fullPath;
+    return '/login';
+  }
+});
 
 export default router
 

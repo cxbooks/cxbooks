@@ -67,15 +67,13 @@
 <script lang='ts'>
 
 import { defineComponent,ref  } from 'vue';
+import router from '@/router';
 
-import HeaderVue from "@/components/Header.vue";
-
-import { useAuthStore } from '@/stores';
+import { userStore } from '@/stores';
 // import User from '@/types/user';
 import type RespData from '@/types/response';
 
 import UserService from '@/services/user';
-import { stringLiteral } from '@babel/types';
 
 
 export default defineComponent({
@@ -83,6 +81,7 @@ export default defineComponent({
     data: () => ({
         account: "",
         password: "",
+
         email:"",
         alert: {
             type: "error" as "error" | "success" | "warning" | "info" | undefined,
@@ -95,9 +94,6 @@ export default defineComponent({
         show_login:true,
     }),
 
-    // asyncData({ store }) {
-    //     store.commit("navbar", false);
-    // },
 
     head: () => ({
         title: "登录"
@@ -125,22 +121,23 @@ export default defineComponent({
                 .then((response: RespData) => {
                     // this.todo.id = response.data.id;
                     if (response.code != 0) { //状态码异常
-                        //
+                        
                     }
 
                     console.log(response.data);
 
-                    localStorage.setItem('user', JSON.stringify(response));
+                    const store = userStore()
 
-                    // this.user = user;
-                    // this.submitted = true;
-                    // router.push(this.returnUrl || '/');
+                    store.$state = response.data
+
+                    router.push(store.returnUrl || '/');
+
                 }).catch((e) => {
                     console.log(e);
                 })
 
 
-            const authStore = useAuthStore();
+      
             
             // return authStore.login(this.account, this.password)
             //     .catch(error => { 
