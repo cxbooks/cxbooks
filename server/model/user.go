@@ -40,9 +40,8 @@ func FirstUserByAccount(store *Store, account string) (*User, error) {
 
 // VerifyPassword VerifyPassword
 func (m *User) VerifyPassword(str string) bool {
-	//zlog.D("VerifyPassword : ", m.Credential)
-	err := bcrypt.CompareHashAndPassword([]byte(m.Credential), []byte(str))
 
+	err := bcrypt.CompareHashAndPassword([]byte(m.Credential), []byte(str))
 	return err == nil
 }
 
@@ -61,6 +60,7 @@ func (m *User) CreateSession(store *Store, UA, From, IP string) (*Session, error
 		FromUrl:   From,
 		RemoteIP:  IP,
 		Duration:  1800,
+		UTime:     time.Now(),
 	}
 
 	err := session.Save(store)

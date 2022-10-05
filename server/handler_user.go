@@ -61,14 +61,14 @@ func SignInHandler(c *gin.Context) {
 
 	user, err := model.FirstUserByAccount(srv.orm, req.Account)
 
-	if err != nil && user.VerifyPassword(req.Password) {
+	if err != nil || !user.VerifyPassword(req.Password) {
 		zlog.E(`查询用户失败：`, err)
 		c.JSON(200, ErrUserPassword.Tr(ZH))
 		return
 	}
 
 	if user.Locked {
-		zlog.E(`查询用户失败：`, err)
+		zlog.E(`用户或者客户端已经被锁定：`, err)
 		c.JSON(200, ErrUserLocked.Tr(ZH))
 		return
 	}
@@ -80,7 +80,7 @@ func SignInHandler(c *gin.Context) {
 		return
 	}
 	zlog.I(`用户登录成功设置，浏览器cookies`)
-	c.SetCookie(UserSessionTag, sess.Session, 0, "/", c.Request.Host, true, true)
+	c.SetCookie(UserSessionTag, sess.Session, 1*24*3600, "/", c.Request.Host, true, true)
 	//TODO recording login log to DB
 
 	c.JSON(200, SUCCESS.Tr(ZH))
@@ -91,8 +91,6 @@ func SignInHandler(c *gin.Context) {
 // }
 
 func SignOutHandler(c *gin.Context) {
-
-	
 
 }
 func UserUpdateHandler(c *gin.Context) {

@@ -1,4 +1,4 @@
-export default interface RespData {
+export interface RespData {
     code: number,
     message: string,
     data: any,

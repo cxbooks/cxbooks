@@ -71,7 +71,7 @@ import router from '@/router';
 
 import { userStore } from '@/stores';
 // import User from '@/types/user';
-import type RespData from '@/types/response';
+import type {RespData} from '@/types';
 
 import UserService from '@/services/user';
 
@@ -120,17 +120,21 @@ export default defineComponent({
             UserService.login(this.account, this.password)
                 .then((response: RespData) => {
                     // this.todo.id = response.data.id;
-                    if (response.code != 0) { //状态码异常
-                        
+                    if (response.data.code != 0) { //状态码异常
+                        console.log(response.data);
+                        return 
                     }
 
-                    console.log(response.data);
+                
 
                     const store = userStore()
 
+                    store.isLogin = true
+
                     store.$state = response.data
 
-                    router.push(store.returnUrl || '/');
+                    console.log(`redirect to home `);
+                    router.push('/home');
 
                 }).catch((e) => {
                     console.log(e);

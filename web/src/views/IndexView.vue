@@ -4,7 +4,7 @@
             <v-col cols=12>
                 <p class="ma-0 title">随便推荐</p>
             </v-col>
-            <v-col cols=6 xs=6 sm=4 md=2 lg=1 v-for="(book,idx) in get_random_books" :key="'rec'+idx+book.id"
+            <v-col cols=6 xs=6 sm=4 md=2 lg=1 v-for="(book,idx) in books.random" :key="'rec'+idx+book.id"
                 class="book-card">
                 <v-card :to="book.href" class="ma-1">
                     <v-img :src="book.img" :aspect-ratio="11/15"> </v-img>
@@ -17,7 +17,7 @@
                 <p class="ma-0 title">新书推荐</p>
             </v-col>
             <v-col cols=12>
-                <book-cards :books="get_recent_books"></book-cards>
+                <book-cards :books="books.recent"></book-cards>
             </v-col>
         </v-row>
         <v-row>
@@ -47,53 +47,67 @@
     </div>
 </template>
 
-<script>
+<script setup lang='ts'>
+
 import BookCards from "@/components/BookCards.vue";
-export default {
-    name: 'IndexView',
-    components: {
-        BookCards,
-    },
-    computed: {
-        get_random_books: function() {
-            return this.random_books.map( b => {
-                b['href'] = "/book/" + b.id;
-                return b;
-            });
-        },
-        get_recent_books: function() {
-            return this.new_books.map( b => {
-                b['href'] = "/book/" + b.id;
-                return b;
-            });
-        },
-    },
-    created() {
-        // this.$store.commit('navbar', true);
-        this.navs = [
-            { icon: 'widgets',            href:'/nav',       text: '分类导览',  count: 0      },
-            { icon: 'mdi-human-greeting', href:'/author',    text: '作者',     count: 0   },
-            { icon: 'mdi-home-group',     href:'/publisher', text: '出版社',   count: 0 },
-            { icon: 'mdi-tag-heart',      href:'/tag',       text: '标签',     count: 0       },
-            { icon: 'mdi-history',        href:'/recent',    text: '所有书籍', },
-            { icon: 'mdi-trending-up',    href:'/hot',       text: '热度榜单', },
-            ]
-    },
-    async asyncData({ app, res }) {
-        if ( res !== undefined ) {
-            res.setHeader('Cache-Control', 'no-cache');
-        }
-        return app.$backend("/index?random=12&recent=12");
-    },
-    data: () => ({
-        random_books: [],
-        new_books: [],
-        navs: [],
-    }),
-    head: () => ({
-        titleTemplate: "%s",
-    })
+import {  onMounted, ref } from 'vue';
+import BookService from '@/services/book';
+import type { RespData, Book,Nav } from '@/types';
+
+
+interface IndexBook {
+    random: Book[],
+    recent: Book[],
 }
+
+let books = ref<IndexBook>({random:[],recent:[]})
+
+
+
+   
+
+onMounted(()=>{
+
+    BookService.index()
+        .then((response: RespData) => {
+            // this.todo.id = response.data.id;
+            if (response.code != 0) { //状态码异常
+
+            }
+
+            // console.log(response.data);
+            books = response.data
+            console.log(books);
+            // const store = userStore()
+
+            // store.$state = response.data
+
+            // router.push(store.returnUrl || '/');
+
+        }).catch((e) => {
+            console.log(e);
+        })
+
+
+}
+)
+
+const navs: Nav[] = [
+    { icon: 'widgets', href: '/nav', text: '分类导览', count: 0 },
+    { icon: 'mdi-human-greeting', href: '/author', text: '作者', count: 0 },
+    { icon: 'mdi-home-group', href: '/publisher', text: '出版社', count: 0 },
+    { icon: 'mdi-tag-heart', href: '/tag', text: '标签', count: 0 },
+    { icon: 'mdi-history', href: '/recent', text: '所有书籍', count:0},
+    { icon: 'mdi-trending-up', href: '/hot', text: '热度榜单', count: 0 },
+]   
+
+
+
+// const head: () => ({
+//     titleTemplate: "%s",
+// })
+
+
 </script>
 
 <style>

@@ -24,6 +24,7 @@ func OauthMiddleware(c *gin.Context) {
 	session, err := getSession(c)
 
 	if err != nil {
+		zlog.E(`获取Session 失败：`, err.Error())
 		c.JSON(401, ErrSession.Tr(ZH))
 		c.Abort()
 		return
@@ -32,11 +33,11 @@ func OauthMiddleware(c *gin.Context) {
 	//校验session 合法性
 	//获取相对时间
 	// diff := (time.Now().Unix() - session.Utime)
-	diff := time.Since(session.UTime)
+	diff := time.Since(session.UTime) / 1000 / 1000 / 1000
 
 	if diff-session.Duration > 0 {
 
-		zlog.E(`session has expired`, session.Session)
+		zlog.E(`session has expired `, session.Session)
 		// 删除
 		c.SetCookie(UserSessionTag, "", -1, "/", "", true, true)
 		session.Clean(srv.orm)
