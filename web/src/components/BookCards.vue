@@ -1,7 +1,7 @@
 <template>
     <v-row>
     <v-col cols=12 xs=12 sm=6 md=4 v-for="(book,idx) in render_books" :key="idx+'-books-'+book.id" class="book-list-card">
-        <v-card :to="book.href" >
+        <v-card :to="book.href" class='rounded-0'>
             <v-row>
                 <v-col cols=3 class='col-book-img'>
                     <v-img :src="book.cover_url" :aspect-ratio="11/15" ></v-img>
