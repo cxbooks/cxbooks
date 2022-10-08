@@ -14,7 +14,7 @@ RUN if [ "x${BUILD_COUNTRY}" = "xCN" ]; then \
 COPY /web /web/
 
 WORKDIR /web
-RUN npm install && npm run build-in-docker
+RUN npm install && npm run build
 
 
 
@@ -27,7 +27,7 @@ ARG BUILD_DATE=""
 ARG BUILD_HASH=""
 
 COPY ./ /cxbooks/
-COPY --from=nodebuilder /web/dist /cxbooks/dist
+COPY --from=nodebuilder /server/dist /cxbooks/dist
 
 WORKDIR /cxbooks
 

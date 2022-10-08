@@ -60,7 +60,6 @@ func NewServiceWithConfig(cf *Config) *Service {
 	if os.IsNotExist(err) {
 		// path/to/whatever does not exist
 		zlog.D(`缓存目录`, cf.DataPath, `无法访问或者不存在 `, err)
-		panic(`数据库配置异常，HOST空异常`)
 	}
 
 	web := &Service{

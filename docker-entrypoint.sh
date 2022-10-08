@@ -11,6 +11,7 @@ fi
 
 if [ ! -f "/data/conf/conf.yml" ]; then
     mkdir -p /data/conf/
+    mkdir -p /data/db
     cp /conf/conf.yml /data/conf/conf.yml
     cxbooks -conf /data/conf/conf.yml -verbose error -log stdout -init
 fi

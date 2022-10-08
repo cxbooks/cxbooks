@@ -8,6 +8,9 @@ export default defineConfig( {
   define: {
     'process.env': process.env
   },
+  build: {
+    outDir: '../server/dist'
+  },
   plugins: [
     vue(),
     vuetify({
@@ -40,14 +43,3 @@ export default defineConfig( {
     },
   },
 });
-
-
-// devServer: {
-//   proxy: {
-//     "/api": {
-//       target: "http://127.0.0.1:9999",
-//         secure: false,
-//           logLevel: "debug"
-//     }
-//   }
-// }
