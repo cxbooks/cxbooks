@@ -58,8 +58,8 @@ func Index(c *gin.Context) {
 	}
 
 	data := map[string]interface{}{
-		"random_books": randBooks,
-		"recent_book":  recentBooks,
+		"random": randBooks.Books,
+		"recent": recentBooks.Books,
 	}
 
 	c.JSON(200, SUCCESS.Tr(ZH).With(data))
@@ -182,13 +182,15 @@ func ProxyImageHandler(c *gin.Context) {
 
 	ext := filepath.Ext(c.Param(`book_cover_path`))
 
-	if ext != "png" && ext != "jpeg" && ext != "jpg" {
-		zlog.E(`图片路径ID为空`)
+	if ext != ".png" && ext != ".jpeg" && ext != ".jpg" {
+		zlog.E(`图片路径ID为空：`, ext)
 		c.JSON(200, ErrReqArgs.Tr(ZH))
+		return
 	}
 
-	image, err := srv.kv.Get(filepath.Join(`/book/cover`, coverPath))
+	image, err := srv.scanner.GetCoverData(filepath.Join(`/book/cover`, coverPath))
 	if err != nil {
+		zlog.E(`获取图片内容失败`, err.Error())
 		c.JSON(http.StatusNotFound, ErrNoFound.Tr(ZH))
 		return
 	}

@@ -32,7 +32,7 @@ type Service struct {
 	scanner *tools.ScannerManager
 
 	orm *Store
-	kv  *model.KV
+	// kv  *model.KV
 
 	ctx context.Context
 }

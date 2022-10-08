@@ -63,6 +63,10 @@ func NewScannerManager(ctx context.Context, dbpath string, store *model.Store) (
 	return scanner, err
 }
 
+func (m *ScannerManager) GetCoverData(key string) ([]byte, error) {
+	return m.kv.Get(key)
+}
+
 func (m *ScannerManager) IsRunning() bool {
 	m.RLock()
 	defer m.RUnlock()

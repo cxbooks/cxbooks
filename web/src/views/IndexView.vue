@@ -7,7 +7,7 @@
             <v-col cols=6 xs=6 sm=4 md=2 lg=1 v-for="(book,idx) in books.random" :key="'rec'+idx+book.id"
                 class="book-card">
                 <v-card :to="book.href" class="ma-1">
-                    <v-img :src="book.img" :aspect-ratio="11/15"> </v-img>
+                    <v-img :src="book.cover_url" :aspect-ratio="11/15"> </v-img>
                 </v-card>
             </v-col>
         </v-row>
@@ -29,13 +29,13 @@
                 <v-card outlined>
                     <v-list>
                         <v-list-item :to="nav.href">
-                            <v-list-item-avatar large color='primary'>
+                            <v-avatar large color='primary'>
                                 <v-icon dark>{{nav.icon}}</v-icon>
-                            </v-list-item-avatar>
-                            <v-list-item-content>
+                            </v-avatar>
+ 
                                 <v-list-item-title>{{nav.text}} </v-list-item-title>
                                 <v-list-item-subtitle>{{nav.subtitle}}</v-list-item-subtitle>
-                            </v-list-item-content>
+
                             <v-list-item-action>
                                 <v-icon>mdi-arrow-right</v-icon>
                             </v-list-item-action>
@@ -60,23 +60,21 @@ interface IndexBook {
     recent: Book[],
 }
 
-let books = ref<IndexBook>({random:[],recent:[]})
+// let books: IndexBook = ref<{ random: [], recent: []}>
+let books = ref <IndexBook> ({random:[],recent:[]})
 
-
-
-   
 
 onMounted(()=>{
 
     BookService.index()
         .then((response: RespData) => {
             // this.todo.id = response.data.id;
-            if (response.code != 0) { //状态码异常
-
+            if (response.data.code != 0) { //状态码异常
+                console.log(response.data);
             }
 
             // console.log(response.data);
-            books = response.data
+            books.value = response.data.data
             console.log(books);
             // const store = userStore()
 

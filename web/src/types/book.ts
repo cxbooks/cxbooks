@@ -2,5 +2,5 @@
 export interface Book {
     id: number,
     href: string,
-    img: string,
+    cover_url: string,
 }

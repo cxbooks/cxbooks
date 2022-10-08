@@ -4,7 +4,7 @@
         <v-card :to="book.href" >
             <v-row>
                 <v-col cols=3 class='col-book-img'>
-                    <v-img :src="book.img" :aspect-ratio="11/15" ></v-img>
+                    <v-img :src="book.cover_url" :aspect-ratio="11/15" ></v-img>
                 </v-col>
                 <v-col cols=9 class='col-book-info'>
                     <v-card-text class="pb-0" align-left>
