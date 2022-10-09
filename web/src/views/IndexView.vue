@@ -4,7 +4,7 @@
             <v-col cols=12>
                 <p class="ma-0 title">随便推荐</p>
             </v-col>
-            <v-col cols=6 xs=6 sm=4 md=2 lg=1 v-for="(book,idx) in books.random" :key="'rec'+idx+book.id"
+            <v-col cols=6 xs=6 sm=4 md=2 lg=2 v-for="(book,idx) in render_books(books.random)" :key="'rec'+idx+book.id"
                 class="book-card">
                 <v-card :to="book.href" class='rounded-0'>
                     <v-img :src="book.cover_url" :aspect-ratio="11/15"> </v-img>
@@ -60,9 +60,18 @@ interface IndexBook {
     recent: Book[],
 }
 
-// let books: IndexBook = ref<{ random: [], recent: []}>
-let books = ref <IndexBook> ({random:[],recent:[]})
+const books = ref <IndexBook> ({random:[],recent:[]})
 
+
+const render_books = (books: Book[] ) => {
+     books.map(b => {
+        if (b['href'] == undefined) {
+            b['href'] = "/book/" + b.id;
+        }
+        return b;
+    });
+    return books
+}
 
 onMounted(()=>{
 

@@ -1,6 +1,8 @@
 package server
 
 import (
+	"net"
+
 	"github.com/cxbooks/cxbooks/server/model"
 	"github.com/cxbooks/cxbooks/server/zlog"
 	"github.com/gin-gonic/gin"
@@ -79,8 +81,16 @@ func SignInHandler(c *gin.Context) {
 		c.JSON(200, ErrInnerServer.Tr(ZH))
 		return
 	}
-	zlog.I(`用户登录成功设置，浏览器cookies`)
-	c.SetCookie(UserSessionTag, sess.Session, 1*24*3600, "/", c.Request.Host, true, true)
+
+	host, _, err := net.SplitHostPort(c.Request.Host)
+
+	if err != nil {
+		zlog.I(`区分端口失败： `, c.Request.Host)
+		host = c.Request.Host
+	}
+
+	zlog.I(`用户登录成功设置，浏览器cookies,Host: `, host)
+	c.SetCookie(UserSessionTag, sess.Session, 1*24*3600, "/", host, false, true)
 	//TODO recording login log to DB
 
 	c.JSON(200, SUCCESS.Tr(ZH))
