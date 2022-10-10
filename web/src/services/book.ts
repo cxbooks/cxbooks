@@ -7,7 +7,7 @@ class BookService {
         return backend.get("/api/book/index")
     }
 
-    get(id: string|number): Promise<any> {
+    get(id: string|string[]): Promise<any> {
         return backend.get(`/api/books/${id}`)
     }
 

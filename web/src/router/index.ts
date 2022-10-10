@@ -18,6 +18,11 @@ const router = createRouter({
           component: () => import("@/views/IndexView.vue")
         },
         {
+          name: "Book",
+          path: "/book/:id",
+          component: () => import("@/views/BookView.vue")
+        },
+        {
           name: "Publisher",
           path: "/publisher",
           component: () => import("@/views/IndexView.vue")
@@ -37,6 +42,7 @@ const router = createRouter({
           path: "/admin/users",
           component: () => import("@/views/IndexView.vue")
         },
+        
         {
           name: "系统设置",
           path: "/admin/settings",
