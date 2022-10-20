@@ -31,7 +31,7 @@ func RegRoute(router *gin.Engine) {
 
 	user.GET("/info", UserInfoHandler)
 	user.GET("/messages", UserMessagesHandler)
-	user.POST("/logout", SignOutHandler)
+
 	// user.POST("/sign_up", SignUp)
 	user.POST("/update", UserUpdateHandler)
 	user.POST("/reset", UserResetHandler)
@@ -53,6 +53,9 @@ func RegRoute(router *gin.Engine) {
 	// router.GET("/api/author/(.*)/update", AuthorBooksUpdate)
 	// router.GET("/api/publisher/(.*)/update", PubBooksUpdate)
 
+	router.POST("/api/user/logout", SignOutHandler)
+
+	router.GET("/api/book/stats", OauthMiddleware, GetBookStats)
 	router.GET("/api/book/index", OauthMiddleware, Index)
 	router.GET("/api/book/search", OauthMiddleware, SearchBook)
 	router.GET("/api/book/recent", OauthMiddleware, RecentBook)

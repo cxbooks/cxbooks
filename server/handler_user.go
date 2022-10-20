@@ -1,8 +1,6 @@
 package server
 
 import (
-	"net"
-
 	"github.com/cxbooks/cxbooks/server/model"
 	"github.com/cxbooks/cxbooks/server/zlog"
 	"github.com/gin-gonic/gin"
@@ -48,7 +46,6 @@ type LoginReq struct {
 func SignInHandler(c *gin.Context) {
 
 	// ip := c.ClientIP()
-
 	req := &struct {
 		Account  string `form:"account" json:"account" binding:"required"`
 		Password string `form:"password" json:"password" binding:"required"`
@@ -82,27 +79,34 @@ func SignInHandler(c *gin.Context) {
 		return
 	}
 
-	host, _, err := net.SplitHostPort(c.Request.Host)
+	zlog.I(`用户登录成功设置，浏览器cookies,Host: `, c.Request.Host)
+	c.SetCookie(UserSessionTag, sess.Session, 1*24*3600, "/", getHostName(c), false, true)
+	//TODO recording login log to DB
+	c.JSON(200, SUCCESS.Tr(ZH).With(user.Masking()))
+}
+
+// SignOutHandler 用户登出
+func SignOutHandler(c *gin.Context) {
+
+	session, err := getSession(c)
 
 	if err != nil {
-		zlog.I(`区分端口失败： `, c.Request.Host)
-		host = c.Request.Host
+		zlog.E(`获取Session 失败：`, err.Error())
+		c.JSON(401, ErrSession.Tr(ZH))
+		c.Abort()
+		return
 	}
 
-	zlog.I(`用户登录成功设置，浏览器cookies,Host: `, host)
-	c.SetCookie(UserSessionTag, sess.Session, 1*24*3600, "/", host, false, true)
-	//TODO recording login log to DB
+	zlog.I(`用户登出：`, session.UserInfo.NickName)
+
+	session.Clean(srv.Store())
+
+	//清除cookies
+	c.SetCookie(UserSessionTag, "", -1, "/", getHostName(c), true, true)
 
 	c.JSON(200, SUCCESS.Tr(ZH))
 }
 
-// func SignUp(c *gin.Context) {
-
-// }
-
-func SignOutHandler(c *gin.Context) {
-
-}
 func UserUpdateHandler(c *gin.Context) {
 
 }

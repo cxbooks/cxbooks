@@ -1,5 +1,12 @@
 
 
+export interface BookStats {
+    total: number,
+    author: number,
+    publisher: number,
+    tag: number,
+}
+
 export interface File  {
     size: number,
     format: string,

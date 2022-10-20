@@ -11,7 +11,7 @@ BUILD_DATE=$(shell date -u '+%Y-%m-%d_%I:%M:%S%p')
 BUILD_HASH=$(shell git rev-parse HEAD)
 LDFLAGS="-X github.com/cxbooks/cxbooks.buildstamp=${BUILD_DATE} -X github.com/cxbooks/cxbooks.githash=${BUILD_HASH} -X github.com/cxbooks/cxbooks.VERSION=${VERSION} -s -w"
 DESTDIR=${PROJECT_PATH}/build
-VERSION=v0.0.1
+VERSION=v0.0.2
 TARGETS = cxbooks
 
 
@@ -30,10 +30,10 @@ cxbooks: vue
 	@#debian上直接使用mkdir不会创建，需要额外调用 bash-c 
 	@bash -c "mkdir -p ${DESTDIR}/cxbooks-${VERSION}/{ssl,conf,bin,i18n}"
 	@echo "拷贝配置文件"
-	@cp -f ${PROJECT_PATH}/cmd/conf.yml ${DESTDIR}/cxbooks-${VERSION}/conf/conf.yml
+	@cp -f ${PROJECT_PATH}/server/cmd/conf.yml ${DESTDIR}/cxbooks-${VERSION}/conf/conf.yml
 
-	@echo "编译 github.com/cxbooks/cxbooks/cmd"
-	@env GOARCH=amd64 go build -ldflags ${LDFLAGS} -o ${DESTDIR}/cxbooks-${VERSION}/bin/cxbooks github.com/cxbooks/cxbooks/cmd
+	@echo "编译 github.com/cxbooks/cxbooks/server/cmd"
+	@cd ${PROJECT_PATH}/server && env GOARCH=amd64 go build -ldflags ${LDFLAGS} -o ${DESTDIR}/cxbooks-${VERSION}/bin/cxbooks github.com/cxbooks/cxbooks/server/cmd && cd -
 
 	@echo "打包文件 cxbooks-${VERSION}.tar.gz"
 	@cd ${DESTDIR}; tar -czf cxbooks-${VERSION}.tar.gz cxbooks-${VERSION}

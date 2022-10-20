@@ -1,5 +1,5 @@
-export interface RespData {
+export interface RespData<T =any> {
     code: number,
     message: string,
-    data: any,
+    data: T,
 }

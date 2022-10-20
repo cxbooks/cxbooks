@@ -26,10 +26,11 @@ ARG GIT_VERSION=""
 ARG BUILD_DATE=""
 ARG BUILD_HASH=""
 
-COPY ./ /cxbooks/
-COPY --from=nodebuilder /server/dist /cxbooks/dist
+COPY /server /server/
+COPY docker-entrypoint.sh /
+COPY --from=nodebuilder /server/dist /cxbooks/server/dist
 
-WORKDIR /cxbooks
+WORKDIR /cxbooks/server/
 
 # 中国境内修改源，加速下载
 RUN if [ "x${BUILD_COUNTRY}" = "xCN" ]; then \
@@ -40,11 +41,11 @@ RUN if [ "x${BUILD_COUNTRY}" = "xCN" ]; then \
     fi
 
 RUN apk add build-base && \
-    chmod +x /cxbooks/docker-entrypoint.sh && \
+    chmod +x /docker-entrypoint.sh && \
     mkdir -p /build/ssl && mkdir /build/conf && mkdir /build/bin && mkdir /build/i18n && \
-    cp /cxbooks/cmd/conf.yml /build/conf/conf.yml && \
+    cp /server/cmd/conf.yml /build/conf/conf.yml && \
     go build -ldflags "-X github.com/cxbooks/cxbooks/server.buildstamp=${BUILD_DATE} -X github.com/cxbooks/cxbooks/server.githash=${BUILD_HASH} -X github.com/cxbooks/cxbooks/server.VERSION=${GIT_VERSION} -s -w" \
-    -o /build/bin/cxbooks github.com/cxbooks/cxbooks/cmd
+    -o /build/bin/cxbooks github.com/cxbooks/cxbooks/server/cmd
 
 
 # stage 3: for production
@@ -55,7 +56,7 @@ LABEL author="tjuliuyou@gmail.com" \
 # RUN apk add --no-cache tzdata ca-certificates libc6-compat libgcc libstdc++
 
 COPY --from=gobuilder /build/ ./
-COPY --from=gobuilder /cxbooks/docker-entrypoint.sh ./
+COPY --from=gobuilder /docker-entrypoint.sh ./
 
 ENV CONFIG_FILE=/data/conf/conf.yml \
     VERBOSE=info \

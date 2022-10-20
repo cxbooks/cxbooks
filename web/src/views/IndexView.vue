@@ -51,7 +51,7 @@
 
 import BookCards from "@/components/BookCards.vue";
 import {  onMounted, ref } from 'vue';
-import BookService from '@/services/book';
+import {bookIndex} from '@/services/book';
 import type { RespData, Book,Nav } from '@/types';
 
 
@@ -75,21 +75,16 @@ const render_books = (books: Book[] ) => {
 
 onMounted(()=>{
 
-    BookService.index()
-        .then((response: RespData) => {
+    bookIndex()
+        .then((response) => {
             // this.todo.id = response.data.id;
-            if (response.data.code != 0) { //状态码异常
+            if (response.code != 0) { //状态码异常
                 console.log(response.data);
             }
 
             // console.log(response.data);
-            books.value = response.data.data
-            console.log(books);
-            // const store = userStore()
-
-            // store.$state = response.data
-
-            // router.push(store.returnUrl || '/');
+            books.value = response.data
+         
 
         }).catch((e) => {
             console.log(e);

@@ -11,15 +11,33 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// UserInfo GET /api/user/info
+// 获取用户信息
+func GetBookStats(c *gin.Context) {
+	zlog.D(`获取书籍概览信息`)
+
+	stats, err := model.GetBookStats(srv.Store())
+
+	if err != nil {
+		zlog.E(`获取数据信息失败`)
+		c.JSON(404, ErrNoFound.Tr(ZH))
+	}
+
+	c.JSON(200, SUCCESS.Tr(ZH).With(stats))
+
+}
+
 func MetaList(c *gin.Context) {
 
 }
 func MetaBooks(c *gin.Context) {
 
 }
+
 func AuthorBooksUpdate(c *gin.Context) {
 
 }
+
 func PubBooksUpdate(c *gin.Context) {
 
 }
@@ -122,15 +140,35 @@ func HotBook(c *gin.Context) {
 func BookNav(c *gin.Context) {
 
 }
+
 func BookUpload(c *gin.Context) {
 
 }
+
 func BookDetail(c *gin.Context) {
+	bookID := c.Param(`book_id`)
+	id, err := strconv.Atoi(bookID)
+	if err != nil {
+		zlog.I(`用户登录参数异常`, err)
+		c.JSON(200, ErrInnerServer.Tr(ZH).With(err.Error()))
+		return
+	}
+
+	book, err := model.FirstBookByID(srv.orm, id)
+	if err != nil {
+		zlog.I(`用户登录参数异常`, err)
+		c.JSON(200, ErrInnerServer.Tr(ZH).With(err.Error()))
+		return
+	}
+
+	c.JSON(200, SUCCESS.Tr(ZH).With(book))
 
 }
+
 func BookDelete(c *gin.Context) {
 
 }
+
 func BookEdit(c *gin.Context) {
 
 }

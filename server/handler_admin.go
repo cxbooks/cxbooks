@@ -16,12 +16,15 @@ func AdminUsers(c *gin.Context) {
 func AdminInstall(c *gin.Context) {
 
 }
+
 func AdminSettings(c *gin.Context) {
 
 }
+
 func AdminTestMail(c *gin.Context) {
 
 }
+
 func AdminBookList(c *gin.Context) {
 
 }

@@ -30,7 +30,7 @@ type Book struct {
 	UUID       string `json:"uuid" gorm:"type:varchar(50);comment:图书UUI"`
 	ISBN       string `json:"isbn" gorm:"type:varchar(50);comment:ISBN"`
 	ASIN       string `json:"asin" gorm:"type:varchar(50);comment:AWS ID"`
-	Identifier string `json:"identifier" gorm:"type:varchar(50);comment:唯一ID"`
+	Identifier string `json:"identifier" gorm:"type:varchar(50);uniqueIndex;comment:唯一ID"`
 	Author     string `json:"author" gorm:"index:idx_book_author;type:varchar(200);comment:作者"`
 	AuthorURL  string `json:"author_url" gorm:"type:varchar(255);comment:作者URL"`
 	AuthorSort string `json:"author_sort" gorm:"type:varchar(255);comment:作者列表"`
@@ -73,6 +73,26 @@ func RandomBooks(store *Store, limit int) (BookResp, error) {
 	err := store.Table(`books`).Limit(limit).Order(`RANDOM()`).Find(&books).Error
 
 	return BookResp{len(books), books}, err
+
+}
+
+type BookStats struct {
+	Total     int `json:"total"`
+	Author    int `json:"author"`
+	Publisher int `json:"publisher"`
+	Tag       int `json:"tag"`
+}
+
+func GetBookStats(store *Store) (BookStats, error) {
+
+	stats := BookStats{}
+	// SELECT * FROM table ORDER BY RANDOM() LIMIT 1;
+
+	err := store.Raw(`SELECT count(1) as total, COUNT ( DISTINCT author ) AS author, COUNT ( DISTINCT publisher ) AS publisher FROM books`).Scan(&stats).Error
+
+	//todo from tags table
+
+	return stats, err
 
 }
 
@@ -146,6 +166,10 @@ func (book *Book) Save(store *Store) error {
 
 func (book *Book) GetCoverData() []byte {
 	return book.coverData
+}
+
+func (book *Book) IsDuplicate(id string) bool {
+	return book.Identifier == id
 }
 
 // GetMetadataFromFile reads metadata from an epub file.

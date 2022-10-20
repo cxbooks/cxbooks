@@ -1,22 +1,93 @@
+import type { BookStats } from '@/types';
 import { defineStore } from 'pinia';
+import { v4 as uuid } from 'uuid';
+
+import { ref, computed, watch } from 'vue'
+import { login, getBookstats } from '@/services';
+
+export const userStore = defineStore('user_info', () => {
+   
+    const token = ref(window.localStorage.getItem('token') || '')
+
+    const userInfo = ref({
+        nickName: '',
+        role_id: '',
+        headerImg: '',
+        authority: {},
+        sideMode: 'dark',
+    })
+
+    const bookStats = ref<BookStats>({total:0,author:0,publisher:0,tag:0})
 
 
-export const userStore = defineStore('user_info', {
-    state: () => {
-        return {
-            nickname: "",
-            returnUrl: "",
-            count: 0,
-            loading: true,
-            role: 1000,
-            isLogin: false,
+    const SetToken = (val: string) => {
+        token.value = val
+    }
+
+    const SetUserInfo = (val: any) => {
+        userInfo.value = val
+    }
+
+    const SetBookStats = (val: BookStats) => {
+        bookStats.value = val
+    }
+
+
+    const ClearStorage = async () => {
+        token.value = ''
+        sessionStorage.clear()
+        localStorage.clear()
+    }
+
+
+
+
+    const Login = async (account: string, password: string) => {
+
+        const resp = await login(account, password)
+
+        console.log(resp.code);
+        if (resp.code === 0 ){
+            
+            SetToken(uuid())
+
+            SetUserInfo(resp.data)
+
+            const stats = await getBookstats()
+
+            if (stats.code === 0) {
+                console.log(stats.data);
+                SetBookStats(stats.data)
+            }
+
+
+            return true
         }
-    },
-    actions: {
-        async save(account: string, password: string) {
 
+        ClearStorage()
 
-            localStorage.setItem('user', JSON.stringify(account));
+        return false
+
+    }
+
+    watch(() => token.value, () => {
+        window.localStorage.setItem('token', token.value)
+    })
+    // actions: {
+    //     async save(account: string, password: string) {
+             
+    //     }
+    // }
+
+    return {
+        userInfo,
+        token,
+        bookStats,
+        Login,
+    }
+});
+
+   // localStorage.setItem('user', JSON.stringify(account));
 
             // this.user = user;
             // this.submitted = true;
@@ -30,11 +101,6 @@ export const userStore = defineStore('user_info', {
             
 
             // redirect to previous url or default to home page
-            
-        }
-    }
-});
-
 
 // Create a new store instance.
 // const store = createStore({

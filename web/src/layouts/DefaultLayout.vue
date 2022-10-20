@@ -1,5 +1,6 @@
 <template>
   <v-app>
+    <MessageVue />
     <!-- ---------------------------------------------- -->
     <!---Sidebar -->
     <!-- ---------------------------------------------- -->
@@ -11,7 +12,7 @@
       :temporary="$vuetify.display.mdAndDown"
       v-model="drawer"
       expand-on-hover
-      v-if="user.isLogin"
+      v-if="store.token"
     >
       <SidebarVue />
     </v-navigation-drawer>
@@ -43,6 +44,7 @@ import { RouterView } from "vue-router";
 import { ref, onMounted } from "vue";
 import SidebarVue from "@/components/Sidebar.vue";
 import HeaderVue from "@/components/Header.vue";
+import MessageVue from "@/components/Message.vue";
 
 import { userStore } from '@/stores';
 
@@ -50,7 +52,7 @@ const drawer = ref(undefined || true);
 const innerW = window.innerWidth;
 // const 
 
-const user = userStore();
+const store = userStore();
 
 
 

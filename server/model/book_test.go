@@ -64,3 +64,19 @@ func TestSearchBooks(t *testing.T) {
 	}
 
 }
+
+func TestStatsBooks(t *testing.T) {
+	zlog.Init(`stdout`, zapcore.DebugLevel)
+	store := initStore()
+
+	stats, err := GetBookStats(store)
+
+	if err != nil {
+		t.Fatalf(err.Error())
+
+	}
+
+	j, _ := json.Marshal(stats)
+
+	println(string(j))
+}

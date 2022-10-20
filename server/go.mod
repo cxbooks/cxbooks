@@ -1,11 +1,10 @@
-module github.com/cxbooks/cxbooks
+module github.com/cxbooks/cxbooks/server
 
 go 1.19
 
 require (
 	github.com/bluele/gcache v0.0.2
 	github.com/cxbooks/epub v0.0.0-20220913085452-dd45a34685a3
-	github.com/gin-contrib/static v0.0.1
 	github.com/gin-gonic/gin v1.8.1
 	github.com/jinzhu/configor v1.2.1
 	github.com/natefinch/lumberjack v2.0.0+incompatible

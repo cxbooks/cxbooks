@@ -18,13 +18,21 @@
           <!-- ---------------------------------------------- -->
           <!---Single Item-->
           <!-- ---------------------------------------------- -->
+          <!-- <v-subheader v-if="item.title">{{ item.title }}</v-subheader> -->
           <v-list-item :to="item.to" rounded="lg" class="mb-1">
-            <v-list-item-avatar start class="v-list-item-avatar--start">
-              <v-icon class="feather-sm v-icon v-icon--size-default">{{
-                item.icon
-              }}</v-icon>
-            </v-list-item-avatar>
-            <v-list-item-title v-text="item.title"></v-list-item-title>
+            
+              
+            <v-list-item-action class="mt-1 mb-1 mr-2" v-if="item.count">
+              <v-list-item-avatar start class="v-list-item-avatar--start">
+                <v-icon class="feather-sm v-icon v-icon--size-default">{{
+                  item.icon
+                  }}</v-icon>
+              
+              </v-list-item-avatar>
+                  <v-list-item-title v-text="item.title"></v-list-item-title>
+                
+              <v-chip small outlined>{{ item.count }}</v-chip>
+            </v-list-item-action>
           </v-list-item>
         </template>
       </v-list>
@@ -51,31 +59,37 @@ const sidebarMenu = [
     title: "Dashboard",
     icon: "mdi-view-dashboard-outline",
     to: "/dashboard",
+    count:10
   },
   {
     title: "Alert",
     icon: "mdi-alert-circle-outline",
     to: "/ui-components/alert",
+    count: 10
   },
   {
     title: "Buttons",
     icon: "mdi-radiobox-blank",
     to: "/ui-components/buttons",
+    count: 10
   },
   {
     title: "Cards",
     icon: "mdi-card-outline",
     to: "/ui-components/cards",
+    count: 10
   },
   {
     title: "Menus",
     icon: "mdi-form-dropdown",
     to: "/ui-components/menus",
+    count: 10
   },
   {
     title: "Tables",
     icon: "mdi-table",
     to: "/ui-components/tables",
+    count: 10
   },
 ];
 </script>

@@ -1,6 +1,7 @@
 package server
 
 import (
+	"net"
 	"time"
 
 	"github.com/cxbooks/cxbooks/server/model"
@@ -62,6 +63,7 @@ func OauthMiddleware(c *gin.Context) {
 	c.Next()
 }
 
+
 // parseSessionUser 获取session 关联的用户信息，
 func getSession(c *gin.Context) (*model.Session, error) {
 	id, err := c.Cookie(UserSessionTag)
@@ -87,3 +89,14 @@ func getSession(c *gin.Context) (*model.Session, error) {
 
 // 	c.Next()
 // }
+
+func getHostName(c *gin.Context) string {
+	host, _, err := net.SplitHostPort(c.Request.Host)
+
+	if err != nil {
+		zlog.I(`区分端口失败： `, c.Request.Host)
+		host = c.Request.Host
+	}
+
+	return host
+}

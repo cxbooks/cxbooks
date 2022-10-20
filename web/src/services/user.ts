@@ -1,42 +1,44 @@
 import backend from "@/helpers/backend"
+import type { RespData } from '@/types';
 
+export const login = (name: string, passwd: string) => {
 
-
-class UserService {
-
-    //登入
-    login(name:string,passwd:string): Promise<any> {
-
-        const data = {
-            account: name,
-            password: passwd,
-        }
-        return backend.post("/api/user/login",data)
+    const data = {
+        account: name,
+        password: passwd,
     }
 
-    //登出
-    logout(): Promise<any> {
-        return backend.post("/api/user/logout")
-    }
+    // return backend.post<RespData>('/api/user/login',data)
 
-    //获取当前登陆账号
-    info(): Promise<any> {
-        return backend.get(`/api/user/info`)
-    }
-
-    //修改用户信息
-    update(id: string | number, data: any): Promise<any> {
-        return backend.put(`/api/users/${id}`,data)
-    }
-
-
-    //获取用户列表
-    list(query: any): Promise<any> {
-        return backend.get("/api/user/search")
-    }
-
-
-
+    return backend({
+        url: '/api/user/login',
+        method: 'post',
+        data: data
+    })
 }
 
-export default new UserService();
+
+export const logout = () => {
+
+    return backend({
+        url: '/api/user/logout',
+        method: 'post'
+    })
+}
+
+export const getUserList = (query: any) => {
+
+    return backend({
+        url: '/api/user/login',
+        method: 'get',
+        data: query
+    })
+}
+
+//修改用户信息
+export const updateUser = (id: string | number, data: any) => {
+    // return backend(`/api/users/${id}`, data)
+}
+
+
+

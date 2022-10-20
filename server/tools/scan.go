@@ -188,17 +188,18 @@ func (m *Scanner) Start(ctx context.Context, kv *model.KV, store *model.Store, m
 
 					} else {
 
+						//存储图书到数据库 TODO 处理重复问题
+						if err := b.Save(store); err != nil {
+							zlog.E(`存储图书失败：`, err)
+							errChan <- `文件：` + b.Path + ` 存储失败：` + err.Error()
+						}
+
 						//存储封面图片数据
 						if err := kv.Set(b.CoverURL, b.GetCoverData(), 0); err != nil {
 							zlog.E(`存储封面失败,`, book.Path, `失败：`, err.Error())
 							// return err
 						}
 
-						//存储图书到数据库 TODO 处理重复问题
-						if err := b.Save(store); err != nil {
-							zlog.E(`存储图书失败：`, err)
-							errChan <- `文件：` + b.Path + ` 存储失败：` + err.Error()
-						}
 					}
 
 					<-concurrent
