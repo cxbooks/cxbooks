@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import { userStore } from '@/stores';
+import { useUserInfo } from '@/stores';
 
 
 const router = createRouter({
@@ -47,13 +47,13 @@ const router = createRouter({
           name: "系统设置",
           path: "/admin/settings",
           component: () => import("@/views/IndexView.vue")
-        }, {
-          path: '/login',
-          name: 'signin',
-          component: () => import(/* webpackChunkName: "about" */ '@/views/LoginView.vue')
         }
       ]
-    },
+    }, {
+      path: '/login',
+      name: 'signin',
+      component: () => import(/* webpackChunkName: "about" */ '@/views/LoginView.vue')
+    }
 
     
 
@@ -62,9 +62,9 @@ const router = createRouter({
 
 router.beforeEach(async (to) => {
   // redirect to login page if not logged in and trying to access a restricted page
-  const publicPages = ['/login'];
+  const publicPages = ['/login', '/login2'];
   const authRequired = !publicPages.includes(to.path);
-  const auth = userStore();
+  const auth = useUserInfo();
 
   console.log(`is login:`,auth.token)
 

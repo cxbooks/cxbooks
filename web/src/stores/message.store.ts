@@ -69,7 +69,14 @@ export const msgStore = defineStore('message', () => {
 
     }
 
-
+    watch(() => show.value, () => {
+        if (show.value) {//变成show 时，启动计时器慢慢关闭
+            console.log("hide alert after 3 seconds");
+            window.setInterval(() => {
+                show.value = true;
+            }, 3000)    
+        }
+    })
 
     return {
         msg,

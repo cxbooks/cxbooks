@@ -1,4 +1,5 @@
 <template>
+<v-app>
     <div class="login">
         <v-row justify="center" class="fill-center">
             <v-col xs="12" sm="8" md="4">
@@ -55,7 +56,8 @@
                 </v-card>
             </v-col>
         </v-row>
-    </div>    
+    </div>
+</v-app>
 </template>
 
 <script setup lang='ts'>
@@ -63,7 +65,7 @@
 import { defineComponent,ref, reactive  } from 'vue';
 import router from '@/router';
 
-import { userStore,msgStore } from '@/stores';
+import { useUserInfo,msgStore } from '@/stores';
 // import User from '@/types/user';
 import type {RespData} from '@/types';
 
@@ -101,9 +103,9 @@ const do_reset = function () {
 
 const do_login = async () => {
 
-    const store = userStore()
+    const userInfo = useUserInfo()
 
-    const code = await store.Login(user.account, user.password) 
+    const code = await userInfo.Login(user.account, user.password) 
     
   
     if (code) {
@@ -111,7 +113,6 @@ const do_login = async () => {
         router.push('/home');
     }
     //else  弹窗错误提示
-    
 
     
 }

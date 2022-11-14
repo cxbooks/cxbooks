@@ -36,6 +36,7 @@
         <RouterView />
       </v-container>
     </v-main>
+  <FooterVue />
   </v-app>
 </template>
 
@@ -45,14 +46,15 @@ import { ref, onMounted } from "vue";
 import SidebarVue from "@/components/Sidebar.vue";
 import HeaderVue from "@/components/Header.vue";
 import MessageVue from "@/components/Message.vue";
+import FooterVue from "@/components/Footer.vue";
 
-import { userStore } from '@/stores';
+import { useUserInfo } from '@/stores';
 
 const drawer = ref(undefined || true);
 const innerW = window.innerWidth;
 // const 
 
-const store = userStore();
+const store = useUserInfo();
 
 
 

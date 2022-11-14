@@ -15,13 +15,11 @@
 
 import { msgStore } from '@/stores';
 
-
 const store = msgStore()
 
 const hideMessage = () => {
     store.show = false
 }
-
 
 
 </script>

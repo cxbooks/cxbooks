@@ -5,7 +5,7 @@ import { v4 as uuid } from 'uuid';
 import { ref, computed, watch } from 'vue'
 import { login, getBookstats } from '@/services';
 
-export const userStore = defineStore('user_info', () => {
+export const useUserInfo = defineStore('user_info', () => {
    
     const token = ref(window.localStorage.getItem('token') || '')
 
@@ -60,7 +60,6 @@ export const userStore = defineStore('user_info', () => {
                 SetBookStats(stats.data)
             }
 
-
             return true
         }
 
@@ -84,6 +83,7 @@ export const userStore = defineStore('user_info', () => {
         token,
         bookStats,
         Login,
+        SetToken,
     }
 });
 
